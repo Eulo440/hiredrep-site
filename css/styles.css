@@ -964,3 +964,76 @@ input:focus, textarea:focus, select:focus {
 
 /* Keep the brand name in its own casing inside uppercase labels */
 .brand-name { text-transform: none; letter-spacing: normal; }
+
+
+/* Customer dashboard and post-checkout helpers */
+.dash-kicker {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.dashboard-page .site-header {
+  position: relative;
+}
+
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0 0 1.5rem;
+}
+
+.dash-stat {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 1.1rem 1.15rem;
+  box-shadow: var(--shadow);
+}
+
+.dash-stat .n {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  line-height: 1.1;
+  margin-bottom: 0.35rem;
+}
+
+.dash-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.dash-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dash-list li {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.dash-list li:last-child { border-bottom: 0; }
+
+.dash-list li span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin-bottom: 0.15rem;
+}
+
+body.is-paid .js-unpaid-only { display: none; }
+
+@media (max-width: 800px) {
+  .dash-stats { grid-template-columns: 1fr 1fr; }
+  .dash-columns { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .dash-stats { grid-template-columns: 1fr; }
+}

@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /d/
 Sitemap: https://hiredrep.ai/sitemap.xml
