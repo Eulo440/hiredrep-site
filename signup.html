@@ -168,27 +168,27 @@
           <fieldset>
             <legend>F. Inbox, calendar, and compliance</legend>
             <div class="field">
-              <p class="label">Sending preference during the free month <span class="req" aria-hidden="true">*</span></p>
-              <span class="help">We do not buy a new domain for you during the trial.</span>
+              <p class="label">Sending preference <span class="req" aria-hidden="true">*</span></p>
+              <span class="help">By default we send from a HiredRep address and disclose that we are writing on your behalf.</span>
               <div class="choices">
                 <label class="choice">
-                  <input type="radio" name="sending_preference" value="client_mailbox" required>
-                  <span>I will add a mailbox on my domain and invite HiredRep<small>If you can do this, we can handle the rest.</small></span>
-                </label>
-                <label class="choice">
-                  <input type="radio" name="sending_preference" value="hiredrep_address">
+                  <input type="radio" name="sending_preference" value="hiredrep_address" required checked>
                   <span>Send from a HiredRep address under my name<small>We disclose that arrangement. Meetings still book on your calendar.</small></span>
                 </label>
                 <label class="choice">
+                  <input type="radio" name="sending_preference" value="client_mailbox">
+                  <span>Send from my own Google Workspace mailbox<small>If you’d rather we send from your own Google Workspace mailbox, tell us on the form and we’ll walk you through connecting it.</small></span>
+                </label>
+                <label class="choice">
                   <input type="radio" name="sending_preference" value="self_send">
-                  <span>Send me the contacts and drafted emails so I can send them myself<small>Useful if you are not ready to connect a mailbox.</small></span>
+                  <span>Send me the contacts and drafted emails so I can send them myself<small>Useful if you prefer to send from your own inbox.</small></span>
                 </label>
               </div>
             </div>
             <div class="field">
-              <label for="calendar_link">Calendar booking link</label>
-              <span class="help">Calendly, TidyCal, or similar, so meetings land on your calendar</span>
-              <input id="calendar_link" name="calendar_link" type="url" inputmode="url" placeholder="https://">
+              <label for="calendar_link">Calendar booking link <span class="req" aria-hidden="true">*</span></label>
+              <span class="help">Required. We book meetings through this link — for example Calendly, TidyCal, or a Google Calendar booking page.</span>
+              <input id="calendar_link" name="calendar_link" type="url" inputmode="url" placeholder="https://" required>
             </div>
             <div class="field">
               <label for="postal_address">Physical postal mailing address <span class="req" aria-hidden="true">*</span></label>
