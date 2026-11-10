@@ -1037,3 +1037,14 @@ body.is-paid .js-unpaid-only { display: none; }
 @media (max-width: 520px) {
   .dash-stats { grid-template-columns: 1fr; }
 }
+
+/* Keep button text readable inside the header nav */
+.site-nav a.btn,
+.site-nav a.btn:hover,
+.site-nav a.btn[aria-current="page"] {
+  color: var(--cream);
+}
+.site-nav a.btn-secondary,
+.site-nav a.btn-secondary:hover {
+  color: var(--ink);
+}
