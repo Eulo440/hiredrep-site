@@ -94,19 +94,47 @@
   var signedIn = false;
   try { signedIn = localStorage.getItem("hiredrepDemo") === "1"; } catch (err) {}
   if (!signedIn) return;
-  if (/\/login\.html$/.test(location.pathname)) { location.replace("dashboard.html"); return; }
-  var links = document.querySelectorAll('.site-nav a[href="login.html"]');
-  links.forEach(function (a) {
-    a.textContent = "Dashboard";
-    a.setAttribute("href", "dashboard.html");
+
+  var path = location.pathname || "";
+  if (/(?:^|\/)login\.html$/i.test(path)) {
+    location.replace("dashboard.html");
+    return;
+  }
+
+  var nav = document.getElementById("site-nav");
+  if (!nav) return;
+
+  function isLoginHref(href) {
+    return href && /(?:^|\/)login\.html(?:[?#]|$)/i.test(href);
+  }
+
+  function addSignOutAfter(el) {
+    if (nav.querySelector(".js-sign-out, #sign-out")) return;
     var out = document.createElement("a");
-    out.href = "#";
+    out.href = "login.html";
+    out.className = "js-sign-out";
     out.textContent = "Sign out";
     out.addEventListener("click", function (e) {
       e.preventDefault();
       try { localStorage.removeItem("hiredrepDemo"); } catch (err) {}
       location.href = "index.html";
     });
-    a.parentNode.insertBefore(out, a.nextSibling);
+    el.parentNode.insertBefore(out, el.nextSibling);
+  }
+
+  var loginLinks = Array.prototype.filter.call(nav.querySelectorAll("a"), function (a) {
+    return isLoginHref(a.getAttribute("href"));
   });
+
+  if (loginLinks.length) {
+    loginLinks.forEach(function (a) {
+      a.textContent = "Dashboard";
+      a.setAttribute("href", "dashboard.html");
+      addSignOutAfter(a);
+    });
+    return;
+  }
+
+  var dash = nav.querySelector('a[href="dashboard.html"], a[href$="/dashboard.html"]');
+  if (dash) addSignOutAfter(dash);
 })();
