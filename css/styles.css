@@ -1327,3 +1327,21 @@ table.prospects .mono { color: var(--ink-2); }
 .site-nav button.btn-secondary:hover {
   color: var(--ink);
 }
+
+/* Intake optional sections */
+.intake details {
+  margin: 1rem 0 0;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: #fff;
+  padding: 0.65rem 1rem 0.9rem;
+}
+
+.intake details summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.intake details[open] summary {
+  margin-bottom: 0.25rem;
+}

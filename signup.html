@@ -7,7 +7,7 @@
   <meta name="description" content="Start a free month of HiredRep outbound. Card required, $0 today, then $100 a month after 30 days. Tell us who you sell to and we will run done-for-you email.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=2">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -60,8 +60,9 @@
                 <input id="company_name" name="company_name" type="text" autocomplete="organization" required>
               </div>
               <div class="field">
-                <label for="website">Website</label>
-                <input id="website" name="website" type="url" inputmode="url" placeholder="https://">
+                <label for="website">Website <span class="req" aria-hidden="true">*</span></label>
+                <span class="help">We fact-check claims against your site.</span>
+                <input id="website" name="website" type="url" inputmode="url" placeholder="https://yourcompany.com" required>
               </div>
             </div>
             <div class="grid-2">
@@ -70,137 +71,237 @@
                 <input id="full_name" name="full_name" type="text" autocomplete="name" required>
               </div>
               <div class="field">
-                <label for="title">Title</label>
-                <input id="title" name="title" type="text" autocomplete="organization-title">
+                <label for="title">Title (optional)</label>
+                <input id="title" name="title" type="text" autocomplete="organization-title" placeholder="Founder">
               </div>
             </div>
             <div class="field">
               <label for="status_email">Email for status updates <span class="req" aria-hidden="true">*</span></label>
               <input id="status_email" name="status_email" type="email" autocomplete="email" required>
             </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="time_zone">Time zone <span class="req" aria-hidden="true">*</span></label>
+                <select id="time_zone" name="time_zone" required>
+                  <option value="" selected disabled>Select your time zone</option>
+                  <option value="America/New_York">Eastern (ET)</option>
+                  <option value="America/Chicago">Central (CT)</option>
+                  <option value="America/Denver">Mountain (MT)</option>
+                  <option value="America/Phoenix">Arizona (no DST)</option>
+                  <option value="America/Los_Angeles">Pacific (PT)</option>
+                  <option value="America/Anchorage">Alaska (AKT)</option>
+                  <option value="Pacific/Honolulu">Hawaii (HT)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="phone">Phone (optional)</label>
+                <span class="help">For urgent hot leads only.</span>
+                <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(555) 555-5555">
+              </div>
+            </div>
             <div class="field">
               <label for="what_you_sell">In one sentence, what do you sell, and to whom? <span class="req" aria-hidden="true">*</span></label>
-              <textarea id="what_you_sell" name="what_you_sell" required></textarea>
+              <textarea id="what_you_sell" name="what_you_sell" required placeholder="We service commercial HVAC for property managers in Texas."></textarea>
             </div>
           </fieldset>
 
           <fieldset>
             <legend>B. Ideal customer</legend>
             <div class="field">
-              <label for="industries">Industries or verticals to prioritize — and any to skip</label>
-              <textarea id="industries" name="industries"></textarea>
+              <label for="best_customers">Your 3 to 5 best current customers (name + website) <span class="req" aria-hidden="true">*</span></label>
+              <span class="help">We use these to find lookalikes.</span>
+              <textarea id="best_customers" name="best_customers" required placeholder="Acme Plumbing — acmeplumbing.example&#10;River City HVAC — rivercityhvac.example"></textarea>
+            </div>
+            <div class="field">
+              <label for="industries">Industries or verticals to prioritize — and any to skip (optional)</label>
+              <textarea id="industries" name="industries" placeholder="Prioritize: multi-family, restaurants. Skip: residential only."></textarea>
             </div>
             <div class="grid-2">
               <div class="field">
-                <label for="company_size">Company size</label>
+                <label for="company_size">Company size (optional)</label>
                 <span class="help">Employees and/or revenue band</span>
-                <input id="company_size" name="company_size" type="text">
+                <input id="company_size" name="company_size" type="text" placeholder="20–200 employees">
               </div>
               <div class="field">
-                <label for="geography">Geography</label>
-                <span class="help">US only? Specific metros? Regions to exclude?</span>
-                <input id="geography" name="geography" type="text">
+                <label for="geography">Geography (optional)</label>
+                <span class="help">US only? Specific metros?</span>
+                <input id="geography" name="geography" type="text" placeholder="Texas, or skip the Northeast">
               </div>
             </div>
             <div class="field">
-              <label for="titles">Titles or roles we should email</label>
-              <span class="help">For example: Founder, CEO, VP Sales</span>
-              <input id="titles" name="titles" type="text">
+              <label for="titles">Titles or roles we should email (optional)</label>
+              <input id="titles" name="titles" type="text" placeholder="Founder, CEO, VP Sales">
             </div>
             <div class="field">
-              <label for="deal_size">Typical deal size or ACV you care about</label>
-              <input id="deal_size" name="deal_size" type="text">
+              <label for="deal_size">Typical deal size or ACV you care about (optional)</label>
+              <input id="deal_size" name="deal_size" type="text" placeholder="$8,000–$25,000">
+            </div>
+            <div class="field">
+              <label for="accounts_to_skip">Existing customers and open deals we should not email (optional)</label>
+              <span class="help">Separate from the do-not-contact list below.</span>
+              <textarea id="accounts_to_skip" name="accounts_to_skip" placeholder="Current customers or deals already in progress"></textarea>
+            </div>
+            <div class="field">
+              <label for="competitors">Competitors (optional)</label>
+              <span class="help">We will not email them, and it helps sharpen positioning.</span>
+              <textarea id="competitors" name="competitors" placeholder="Name or website"></textarea>
             </div>
           </fieldset>
 
           <fieldset>
             <legend>C. Fit and non-fit</legend>
             <div class="field">
-              <label for="great_fit">What makes a prospect a great fit?</label>
-              <span class="help">Stage, trigger, pain, technology, hiring signal, or anything else we should look for</span>
-              <textarea id="great_fit" name="great_fit"></textarea>
+              <label for="great_fit">What makes a prospect a great fit? (optional)</label>
+              <span class="help">Stage, trigger, pain, or anything else we should look for</span>
+              <textarea id="great_fit" name="great_fit" placeholder="Multi-site operators who just hired a facilities lead"></textarea>
             </div>
             <div class="field">
-              <label for="bad_fit">What makes a prospect a bad fit?</label>
+              <label for="bad_fit">What makes a prospect a bad fit? (optional)</label>
               <span class="help">Disqualifiers we should hard-filter</span>
-              <textarea id="bad_fit" name="bad_fit"></textarea>
+              <textarea id="bad_fit" name="bad_fit" placeholder="One-off homeowners, or companies with an in-house crew"></textarea>
             </div>
           </fieldset>
 
           <fieldset>
             <legend>D. Offer and proof</legend>
             <div class="field">
-              <label for="offer_sentence">How should we describe your offer in one plain sentence?</label>
-              <textarea id="offer_sentence" name="offer_sentence"></textarea>
+              <label for="offer_sentence">How should we describe your offer in one plain sentence? (optional)</label>
+              <textarea id="offer_sentence" name="offer_sentence" placeholder="Same-week commercial plumbing for multi-family properties."></textarea>
             </div>
             <div class="field">
-              <label for="proof_points">Two to four proof points we can use</label>
-              <span class="help">Named clients only with permission, outcomes, years in market, or niche focus. Leave blank if none — we will not invent any.</span>
-              <textarea id="proof_points" name="proof_points"></textarea>
+              <label for="problem_urgency">What problem do you solve and why do buyers act now? <span class="req" aria-hidden="true">*</span></label>
+              <textarea id="problem_urgency" name="problem_urgency" required placeholder="After-hours leaks shut down kitchens; they call when a tenant or inspector is waiting."></textarea>
             </div>
             <div class="field">
-              <label for="never_claim">Anything we must never claim?</label>
-              <textarea id="never_claim" name="never_claim"></textarea>
+              <label for="proof_points">Two to four proof points we can use (optional)</label>
+              <span class="help">Which proof points can we name publicly (client names, numbers)? Leave blank if none — we will not invent any.</span>
+              <textarea id="proof_points" name="proof_points" placeholder="12 years in market; licensed in 4 counties"></textarea>
             </div>
+            <div class="field">
+              <label for="never_claim">Anything we must never claim? (optional)</label>
+              <textarea id="never_claim" name="never_claim" placeholder="Do not say we are the largest, or mention pricing."></textarea>
+            </div>
+            <details>
+              <summary>Optional: objections and industry rules</summary>
+              <div class="field">
+                <label for="objections">Common objections and how you answer them (optional)</label>
+                <textarea id="objections" name="objections" placeholder="“We already have a plumber” — we handle overflow and after-hours."></textarea>
+              </div>
+              <div class="field">
+                <label for="industry_rules">Industry rules we must follow (optional)</label>
+                <span class="help">For example: licensing, healthcare, or finance claims</span>
+                <textarea id="industry_rules" name="industry_rules" placeholder="Must mention we are licensed and insured. No medical claims."></textarea>
+              </div>
+            </details>
           </fieldset>
 
           <fieldset>
             <legend>E. Voice and sender</legend>
+            <p>Before anything sends, we'll write a full 5-email sample for one of your best prospects and revise it with your notes until you approve.</p>
             <div class="field">
-              <label for="tone">Tone preference</label>
+              <label for="tone">Tone preference (optional)</label>
               <span class="help">For example: direct, warm, or formal. Any phrases to use or avoid?</span>
-              <textarea id="tone" name="tone"></textarea>
+              <textarea id="tone" name="tone" placeholder="Direct, no slang. Avoid “synergy.”"></textarea>
             </div>
             <div class="field">
-              <label for="sender_name">Sender name on outbound</label>
+              <label for="sender_name">Sender name on outbound (optional)</label>
               <span class="help">Usually you or a teammate</span>
-              <input id="sender_name" name="sender_name" type="text">
+              <input id="sender_name" name="sender_name" type="text" placeholder="Jordan Hale">
             </div>
             <div class="field">
-              <label for="signature">Signature block we should use</label>
+              <label for="signature">Signature block we should use (optional)</label>
               <span class="help">Name, title, company, phone if you want it, LinkedIn optional</span>
-              <textarea id="signature" name="signature"></textarea>
+              <textarea id="signature" name="signature" placeholder="Jordan Hale&#10;Owner, Summit Ridge Plumbing"></textarea>
+            </div>
+            <details>
+              <summary>Optional: an email you like or would hate</summary>
+              <div class="field">
+                <label for="email_examples">Paste an email you like and/or one you'd hate (optional)</label>
+                <textarea id="email_examples" name="email_examples" placeholder="Paste one you like, one you’d hate, or both."></textarea>
+              </div>
+            </details>
+          </fieldset>
+
+          <fieldset>
+            <legend>F. Meetings</legend>
+            <div class="grid-2">
+              <div class="field">
+                <label for="meeting_owner_name">Who takes meetings <span class="req" aria-hidden="true">*</span></label>
+                <input id="meeting_owner_name" name="meeting_owner_name" type="text" autocomplete="name" placeholder="Name" required>
+              </div>
+              <div class="field">
+                <label for="meeting_owner_email">Their email <span class="req" aria-hidden="true">*</span></label>
+                <input id="meeting_owner_email" name="meeting_owner_email" type="email" autocomplete="email" placeholder="name@yourcompany.com" required>
+              </div>
+            </div>
+            <div class="field">
+              <label for="meeting_format">Meeting length and what happens on the call (optional)</label>
+              <textarea id="meeting_format" name="meeting_format" placeholder="20-minute intro; they share a site issue, you outline next steps."></textarea>
+            </div>
+            <div class="field">
+              <label for="qualified_meeting">What counts as a qualified meeting? <span class="req" aria-hidden="true">*</span></label>
+              <textarea id="qualified_meeting" name="qualified_meeting" required placeholder="A facilities or property lead with a live site, ready to talk this quarter."></textarea>
+            </div>
+            <div class="field">
+              <label for="hot_reply_email">Who to notify on hot replies (optional)</label>
+              <span class="help">Defaults to your status-update email if you leave this blank.</span>
+              <input id="hot_reply_email" name="hot_reply_email" type="email" placeholder="same as status email">
+            </div>
+            <div class="field">
+              <label for="calendar_link">Calendar booking link <span class="req" aria-hidden="true">*</span></label>
+              <span class="help">We book meetings through this link — Calendly, TidyCal, or a Google Calendar booking page.</span>
+              <input id="calendar_link" name="calendar_link" type="url" inputmode="url" placeholder="https://calendly.com/you" required>
             </div>
           </fieldset>
 
           <fieldset>
-            <legend>F. Inbox, calendar, and compliance</legend>
+            <legend>G. Sending</legend>
             <div class="field">
               <p class="label">Sending preference <span class="req" aria-hidden="true">*</span></p>
-              <span class="help">By default we send from a HiredRep address and disclose that we are writing on your behalf.</span>
               <div class="choices">
                 <label class="choice">
-                  <input type="radio" name="sending_preference" value="hiredrep_address" required checked>
-                  <span>Send from a HiredRep address under my name<small>We disclose that arrangement. Meetings still book on your calendar.</small></span>
+                  <input type="radio" name="sending_preference" value="client_domain_mailbox" required checked>
+                  <span>hiredrep@yourdomain.com — a mailbox on your own domain (recommended)</span>
                 </label>
                 <label class="choice">
-                  <input type="radio" name="sending_preference" value="client_mailbox">
-                  <span>Send from my own Google Workspace mailbox<small>If you’d rather we send from your own Google Workspace mailbox, tell us on the form and we’ll walk you through connecting it.</small></span>
-                </label>
-                <label class="choice">
-                  <input type="radio" name="sending_preference" value="self_send">
-                  <span>Send me the contacts and drafted emails so I can send them myself<small>Useful if you prefer to send from your own inbox.</small></span>
+                  <input type="radio" name="sending_preference" value="gethiredrep_mailbox">
+                  <span>yourcompany@gethiredrep.com — we set it up for you, same day</span>
                 </label>
               </div>
             </div>
             <div class="field">
-              <label for="calendar_link">Calendar booking link <span class="req" aria-hidden="true">*</span></label>
-              <span class="help">Required. We book meetings through this link — for example Calendly, TidyCal, or a Google Calendar booking page.</span>
-              <input id="calendar_link" name="calendar_link" type="url" inputmode="url" placeholder="https://" required>
+              <label for="email_provider">Email provider (optional)</label>
+              <select id="email_provider" name="email_provider">
+                <option value="" selected>Select one</option>
+                <option value="google_workspace">Google Workspace</option>
+                <option value="microsoft_365">Microsoft 365</option>
+                <option value="other">Other</option>
+                <option value="not_sure">Not sure</option>
+              </select>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="domain_manager_name">Who manages your domain/email (optional)</label>
+                <input id="domain_manager_name" name="domain_manager_name" type="text" placeholder="Name">
+              </div>
+              <div class="field">
+                <label for="domain_manager_email">Their email (optional)</label>
+                <input id="domain_manager_email" name="domain_manager_email" type="email" placeholder="name@yourcompany.com">
+              </div>
             </div>
             <div class="field">
               <label for="postal_address">Physical postal mailing address <span class="req" aria-hidden="true">*</span></label>
-              <span class="help">Required for the commercial-email footer. This is not used as a billing address.</span>
-              <textarea id="postal_address" name="postal_address" required></textarea>
+              <span class="help">This appears in email footers (CAN-SPAM). A PO box or PMB is fine. Not used for billing.</span>
+              <textarea id="postal_address" name="postal_address" required placeholder="123 Main St or PMB 100, City, ST 00000"></textarea>
             </div>
           </fieldset>
 
           <fieldset>
-            <legend>G. Do-not-contact list</legend>
+            <legend>H. Do-not-contact list</legend>
             <div class="field">
               <label for="dnc_list">Companies and domains we must never email <span class="req" aria-hidden="true">*</span></label>
-              <span class="help">Include current customers, open deals, competitors, partners, and anyone else who is off-limits. A pasted list is fine. You can also email a CSV later (company_name, domain, optional reason). We treat this as a permanent block list and refresh it whenever you send updates.</span>
-              <textarea id="dnc_list" name="dnc_list" required></textarea>
+              <span class="help">Type none if you have no one to exclude. Otherwise paste companies or domains. You can email a CSV later. We treat this as a permanent block list and refresh it when you send updates.</span>
+              <textarea id="dnc_list" name="dnc_list" required placeholder="none"></textarea>
             </div>
           </fieldset>
 
@@ -208,7 +309,7 @@
             <legend>Before you go</legend>
             <label class="check">
               <input type="checkbox" name="agree_service" value="yes" required>
-              <span>I understand that HiredRep is an AI-run outbound service, that I will take the meetings it books, and that starting the free month on Stripe requires a card ($0 today, then $100 a month after 30 days unless I cancel before then). I can cancel anytime; no refunds on months already started.</span>
+              <span>I understand that HiredRep is an AI-run outbound service, that I will take the meetings it books, and that starting the free month on Stripe requires a card ($0 today, then $100 a month after 30 days unless I cancel before then). I can cancel anytime; no refunds on months already started. HiredRep only emails business contacts in the United States.</span>
             </label>
             <div class="form-actions">
               <button class="btn" type="submit">Submit and start your free month</button>
