@@ -88,3 +88,25 @@
     }
   }
 })();
+
+/* Signed-in header: swap "Sign in" for Dashboard + Sign out on every page */
+(function () {
+  var signedIn = false;
+  try { signedIn = localStorage.getItem("hiredrepDemo") === "1"; } catch (err) {}
+  if (!signedIn) return;
+  if (/\/login\.html$/.test(location.pathname)) { location.replace("dashboard.html"); return; }
+  var links = document.querySelectorAll('.site-nav a[href="login.html"]');
+  links.forEach(function (a) {
+    a.textContent = "Dashboard";
+    a.setAttribute("href", "dashboard.html");
+    var out = document.createElement("a");
+    out.href = "#";
+    out.textContent = "Sign out";
+    out.addEventListener("click", function (e) {
+      e.preventDefault();
+      try { localStorage.removeItem("hiredrepDemo"); } catch (err) {}
+      location.href = "index.html";
+    });
+    a.parentNode.insertBefore(out, a.nextSibling);
+  });
+})();

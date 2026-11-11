@@ -12,7 +12,7 @@
   <script>
     (function () {
       try {
-        if (sessionStorage.getItem("hiredrepDemo") !== "1") {
+        if (localStorage.getItem("hiredrepDemo") !== "1") {
           location.replace("login.html");
         }
       } catch (err) {
@@ -317,7 +317,7 @@
       var signOut = document.getElementById("sign-out");
       if (signOut) {
         signOut.addEventListener("click", function () {
-          try { sessionStorage.removeItem("hiredrepDemo"); } catch (err) {}
+          try { localStorage.removeItem("hiredrepDemo"); } catch (err) {}
           location.replace("login.html");
         });
       }

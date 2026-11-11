@@ -90,7 +90,7 @@
         event.preventDefault();
         var email = (document.getElementById("email").value || "").trim().toLowerCase();
         if (email === "demo@hiredrep.ai") {
-          try { sessionStorage.setItem("hiredrepDemo", "1"); } catch (err) {}
+          try { localStorage.setItem("hiredrepDemo", "1"); } catch (err) {}
           window.location.href = "dashboard.html";
           return;
         }
