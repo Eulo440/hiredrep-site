@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Summit Ridge Plumbing dashboard — HiredRep</title>
+  <meta name="description" content="Sample HiredRep client dashboard.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    (function () {
+      try {
+        if (sessionStorage.getItem("hiredrepDemo") !== "1") {
+          location.replace("login.html");
+        }
+      } catch (err) {
+        location.replace("login.html");
+      }
+    })();
+  </script>
+</head>
+<body class="dashboard-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="index.html" aria-label="HiredRep home">
+        <img class="logo-mark" src="assets/mark.svg" alt="">
+        <span class="logo-text"><span class="logo-word">HiredRep</span><span class="logo-tld">.ai</span></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+        <span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Primary">
+        <a href="index.html#why">Why autonomous</a>
+        <a href="index.html#how">How it works</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a href="index.html#faq">FAQ</a>
+        <a href="dashboard.html" aria-current="page">Dashboard</a>
+        <button class="btn btn-sm btn-secondary" type="button" id="sign-out">Sign out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="wrap">
+        <p class="demo-banner">Demo account – sample data</p>
+        <p class="eyebrow">Dashboard</p>
+        <h1>Summit Ridge Plumbing</h1>
+        <p class="lede">Free month: 18 days left. Sample activity so you can see what a live dashboard looks like.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="dash-stats cols-5">
+          <article class="dash-stat">
+            <span class="n">42</span>
+            <span class="n-sub">emails sent</span>
+          </article>
+          <article class="dash-stat">
+            <span class="n">6</span>
+            <span class="n-sub">replies</span>
+          </article>
+          <article class="dash-stat">
+            <span class="n">3</span>
+            <span class="n-sub">positive replies</span>
+          </article>
+          <article class="dash-stat">
+            <span class="n">2</span>
+            <span class="n-sub">meetings booked</span>
+          </article>
+          <article class="dash-stat">
+            <span class="n">18</span>
+            <span class="n-sub">days left in free month</span>
+          </article>
+        </div>
+
+        <article class="dash-card">
+          <h3>Sending mailbox</h3>
+          <p>HiredRep sends from a dedicated mailbox on your domain, not from anyone’s personal inbox.</p>
+          <div class="mailbox-line">
+            <div>
+              <div class="mono">hiredrep@summitridgeplumbing.com</div>
+              <span class="help" style="display:block;margin-top:0.25rem;color:var(--muted);font-size:0.9rem">Dedicated client mailbox</span>
+            </div>
+            <span class="pill pill-connected"><span class="pill-dot" aria-hidden="true"></span>Connected</span>
+          </div>
+          <p style="margin-bottom:0.7rem">Connect your mailbox</p>
+          <div class="hero-actions" style="margin-bottom:0.85rem">
+            <button class="btn btn-secondary btn-sm js-connect" type="button" data-provider="Google">Connect with Google</button>
+            <button class="btn btn-secondary btn-sm js-connect" type="button" data-provider="Microsoft">Connect with Microsoft</button>
+          </div>
+          <p class="fine-print">or send from <span class="mono">summitridge@gethiredrep.com</span></p>
+        </article>
+
+        <article class="dash-card">
+          <h3>Campaign</h3>
+          <p>A 5-touch sequence. A reply, a bounce, or an opt-out stops further notes to that person.</p>
+          <div class="touch-grid">
+            <div class="touch-item"><strong>22</strong><span>Touch 1</span></div>
+            <div class="touch-item"><strong>12</strong><span>Touch 2</span></div>
+            <div class="touch-item"><strong>5</strong><span>Touch 3</span></div>
+            <div class="touch-item"><strong>2</strong><span>Touch 4</span></div>
+            <div class="touch-item"><strong>1</strong><span>Touch 5</span></div>
+          </div>
+        </article>
+
+        <article class="dash-card">
+          <h3>Prospects</h3>
+          <p>Recent people researched and emailed for this sample account.</p>
+          <div class="table-wrap">
+            <table class="prospects">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Role</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Last touch</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Cedar Peak Property Group</td>
+                  <td>Facilities Director</td>
+                  <td class="mono">facilities@cedarpeak.example</td>
+                  <td><span class="pill pill-meeting">Meeting</span></td>
+                  <td>Nov 6, 2026</td>
+                </tr>
+                <tr>
+                  <td>Northwell Kitchen Co.</td>
+                  <td>Owner</td>
+                  <td class="mono">owner@northwellkitchen.example</td>
+                  <td><span class="pill pill-replied">Replied</span></td>
+                  <td>Nov 7, 2026</td>
+                </tr>
+                <tr>
+                  <td>Harbor Lane Apartments</td>
+                  <td>Regional Manager</td>
+                  <td class="mono">rm@harborlane-apts.example</td>
+                  <td><span class="pill pill-sent">Sent</span></td>
+                  <td>Nov 8, 2026</td>
+                </tr>
+                <tr>
+                  <td>Pine &amp; Oak HOA Services</td>
+                  <td>Operations Lead</td>
+                  <td class="mono">ops@pineoakhoa.example</td>
+                  <td><span class="pill pill-sent">Sent</span></td>
+                  <td>Nov 5, 2026</td>
+                </tr>
+                <tr>
+                  <td>Blue Ribbon School Facilities</td>
+                  <td>Maintenance Director</td>
+                  <td class="mono">maintenance@blueribbonfacilities.example</td>
+                  <td><span class="pill pill-replied">Replied</span></td>
+                  <td>Nov 4, 2026</td>
+                </tr>
+                <tr>
+                  <td>Maple Court Medical Offices</td>
+                  <td>Office Manager</td>
+                  <td class="mono">office@maplecourtmed.example</td>
+                  <td><span class="pill pill-sent">Sent</span></td>
+                  <td>Nov 9, 2026</td>
+                </tr>
+                <tr>
+                  <td>Riverview Inn &amp; Suites</td>
+                  <td>General Manager</td>
+                  <td class="mono">gm@riverviewinn.example</td>
+                  <td><span class="pill pill-meeting">Meeting</span></td>
+                  <td>Nov 3, 2026</td>
+                </tr>
+                <tr>
+                  <td>Eastfork Grocery Cooperative</td>
+                  <td>Store Director</td>
+                  <td class="mono">director@eastfork.example</td>
+                  <td><span class="pill pill-opted">Opted out</span></td>
+                  <td>Nov 2, 2026</td>
+                </tr>
+                <tr>
+                  <td>Larkspur Senior Living</td>
+                  <td>Facilities Coordinator</td>
+                  <td class="mono">facilities@larkspursl.example</td>
+                  <td><span class="pill pill-sent">Sent</span></td>
+                  <td>Nov 8, 2026</td>
+                </tr>
+                <tr>
+                  <td>Twin Pines Restaurant Group</td>
+                  <td>Director of Operations</td>
+                  <td class="mono">ops@twinpinesrg.example</td>
+                  <td><span class="pill pill-replied">Replied</span></td>
+                  <td>Nov 7, 2026</td>
+                </tr>
+                <tr>
+                  <td>Copper Hill Warehousing</td>
+                  <td>Plant Manager</td>
+                  <td class="mono">plant@copperhillwh.example</td>
+                  <td><span class="pill pill-sent">Sent</span></td>
+                  <td>Nov 6, 2026</td>
+                </tr>
+                <tr>
+                  <td>Silverbrook Dental Partners</td>
+                  <td>Practice Manager</td>
+                  <td class="mono">practice@silverbrookdp.example</td>
+                  <td><span class="pill pill-sent">Sent</span></td>
+                  <td>Nov 9, 2026</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <div class="dash-columns">
+          <article class="dash-card">
+            <h3>Recent replies</h3>
+            <div class="reply-item">
+              <p><strong>Cedar Peak Property Group</strong></p>
+              <blockquote>“This is worth a conversation. Thursday morning works.”</blockquote>
+            </div>
+            <div class="reply-item">
+              <p><strong>Twin Pines Restaurant Group</strong></p>
+              <blockquote>“Can you send a one-pager on commercial kitchen work?”</blockquote>
+            </div>
+            <div class="reply-item">
+              <p><strong>Northwell Kitchen Co.</strong></p>
+              <blockquote>“We already have a plumber on retainer, but thanks for writing.”</blockquote>
+            </div>
+            <div class="reply-item">
+              <p><strong>Blue Ribbon School Facilities</strong></p>
+              <blockquote>“Not something we need this quarter.”</blockquote>
+            </div>
+          </article>
+          <article class="dash-card">
+            <h3>Upcoming meetings</h3>
+            <div class="meeting-item">
+              <p><strong>Cedar Peak Property Group</strong></p>
+              <p>Thu, Nov 12, 2026 · 10:00 AM CT</p>
+            </div>
+            <div class="meeting-item">
+              <p><strong>Riverview Inn &amp; Suites</strong></p>
+              <p>Fri, Nov 13, 2026 · 2:30 PM CT</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="dash-columns" style="margin-top:1rem">
+          <article class="dash-card">
+            <h3>Who you asked us to reach</h3>
+            <p>Summary of the intake answers for this sample account.</p>
+            <dl class="icp-list">
+              <div>
+                <dt>Company</dt>
+                <dd>Summit Ridge Plumbing</dd>
+              </div>
+              <div>
+                <dt>What they sell</dt>
+                <dd>Commercial plumbing repair and preventive maintenance</dd>
+              </div>
+              <div>
+                <dt>Who buys</dt>
+                <dd>Property managers and facilities directors at apartments, restaurants, and medical offices</dd>
+              </div>
+              <div>
+                <dt>Titles</dt>
+                <dd>Facilities Director, Property Manager, General Manager, Maintenance Director</dd>
+              </div>
+              <div>
+                <dt>Area</dt>
+                <dd>Denver metro / Front Range</dd>
+              </div>
+              <div>
+                <dt>Skip</dt>
+                <dd>One-off residential homeowners</dd>
+              </div>
+              <div>
+                <dt>Voice</dt>
+                <dd>Straightforward, no hype</dd>
+              </div>
+            </dl>
+            <p style="margin-top:1rem"><a href="signup.html">Edit answers</a></p>
+          </article>
+          <article class="dash-card">
+            <h3>Billing</h3>
+            <p>Free first month, then $100 a month. Cancel anytime before day 31 and you will not be charged.</p>
+            <p><a href="https://billing.stripe.com/p/login/6oU28q4Pj2nr8fEgHD3ZK00" rel="noopener">Manage or cancel your subscription</a></p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-inner">
+        <a class="logo" href="index.html" aria-label="HiredRep home">
+          <img class="logo-mark" src="assets/mark.svg" alt="">
+          <span class="logo-text"><span class="logo-word">HiredRep</span><span class="logo-tld">.ai</span></span>
+        </a>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="index.html">Home</a>
+          <a href="signup.html">Intake</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+          <a href="https://billing.stripe.com/p/login/6oU28q4Pj2nr8fEgHD3ZK00" rel="noopener">Manage or cancel</a>
+          <a href="mailto:john@hiredrep.ai">john@hiredrep.ai</a>
+        </nav>
+      </div>
+      <p class="footer-meta">HiredRep · 395 Sawdust Rd PMB 6068, Spring, TX 77380 · <a href="mailto:john@hiredrep.ai">john@hiredrep.ai</a></p>
+    </div>
+  </footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="js/main.js"></script>
+  <script>
+    (function () {
+      var signOut = document.getElementById("sign-out");
+      if (signOut) {
+        signOut.addEventListener("click", function () {
+          try { sessionStorage.removeItem("hiredrepDemo"); } catch (err) {}
+          location.replace("login.html");
+        });
+      }
+
+      var toast = document.getElementById("toast");
+      var timer = null;
+      function showToast(message) {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add("is-on");
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          toast.classList.remove("is-on");
+        }, 3200);
+      }
+
+      document.querySelectorAll(".js-connect").forEach(function (button) {
+        button.addEventListener("click", function () {
+          showToast("Demo: in a live account this opens Google/Microsoft sign-in");
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
