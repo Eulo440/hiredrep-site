@@ -1,6 +1,7 @@
 (function () {
   var STRIPE_LINK = "https://buy.stripe.com/6oU28q4Pj2nr8fEgHD3ZK00";
   var STRIPE_NO_TRIAL_LINK = "https://buy.stripe.com/3cIaEW1D73rv8fE4YV3ZK01";
+  var FORMSUBMIT = "https://formsubmit.co/ajax/john@hiredrep.ai";
   var DEFAULT_API = "http://127.0.0.1:8787/analyze";
   var AGREE_TRIAL = "I understand that HiredRep is an AI-run outbound service, that I will take the meetings it books, and that starting the free month on Stripe requires a card ($0 today, then $100 a month after 30 days unless I cancel before then). I can cancel anytime; no refunds on months already started. HiredRep only emails business contacts in the United States.";
   var AGREE_NO_TRIAL = "I understand that HiredRep is an AI-run outbound service, that I will take the meetings it books, and that starting at $100 a month on Stripe requires a card (charged $100 today, then $100 a month). I can cancel anytime; no refunds on months already started. HiredRep only emails business contacts in the United States.";
@@ -294,20 +295,47 @@
       if ((el.type === "radio" || el.type === "checkbox") && !el.checked) return;
       data[el.name] = el.value;
     });
-    data._subject = "New HiredRep sign-up (" + (data.fit_decision || "unknown") + ")";
+    var decision = data.fit_decision || "review";
+    var company = data.company_name || "unknown";
+    data._subject = "HiredRep intake: " + decision + ": " + company;
+    if (data.status_email && !data._replyto) data._replyto = data.status_email;
     return data;
   }
 
-  function claimSignup(website, email) {
-    return fetch(apiUrl("/claim"), {
+  function saveIntake(data) {
+    return fetch(apiUrl("/intake"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ website: website, email: email }),
+      body: JSON.stringify(data),
     }).then(function (res) {
-      return res.json().catch(function () { return { ok: false }; });
+      return res.json().then(function (body) {
+        return body && typeof body === "object" ? body : { ok: false };
+      }).catch(function () { return { ok: false }; });
     }).catch(function () {
       return { ok: false };
     });
+  }
+
+  function notifyJohn(data) {
+    // Fire-and-forget so Formsubmit never delays the Stripe redirect.
+    try {
+      fetch(FORMSUBMIT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(data),
+        keepalive: true,
+      }).catch(function () { return null; });
+    } catch (e) { /* ignore */ }
+  }
+
+  function showSavedResult(decision) {
+    document.getElementById("result-title").textContent =
+      decision === "decline" ? "Thank you for considering HiredRep." : "We'll confirm within one business day.";
+    document.getElementById("result-body").textContent =
+      decision === "decline"
+        ? "HiredRep is not the right fit in this case, so we have not started a free month or taken a card. If you have questions, email john@hiredrep.ai."
+        : "We received your details and will email you from john@hiredrep.ai within one business day. There is no charge now.";
+    show(stepResult);
   }
 
   intakeForm.addEventListener("submit", function (event) {
@@ -329,25 +357,23 @@
     var data = collectPayload();
     var submitBtn = document.getElementById("submit-btn");
     submitBtn.disabled = true;
-    var website = (data.website || foundInput.value || "").trim();
-    var email = (data.status_email || document.getElementById("status_email").value || "").trim();
 
-    if (decision === "accept" || decision === "returning") {
-      claimSignup(website, email).then(function (claim) {
-        var already = claim && claim.already;
+    notifyJohn(data);
+
+    saveIntake(data).then(function (saved) {
+      if (!saved || !saved.ok) {
+        setError(err, "We could not save your details just now. Please email john@hiredrep.ai or try again.");
+        submitBtn.disabled = false;
+        return;
+      }
+      if (decision === "accept" || decision === "returning") {
+        var already = saved.already;
         var link = decision === "returning" || already ? STRIPE_NO_TRIAL_LINK : STRIPE_LINK;
         window.location.href = link;
-      });
-      return;
-    }
-
-    document.getElementById("result-title").textContent =
-      decision === "decline" ? "Thank you for considering HiredRep." : "We'll confirm within one business day.";
-    document.getElementById("result-body").textContent =
-      decision === "decline"
-        ? "HiredRep is not the right fit in this case, so we have not started a free month or taken a card. If you have questions, email john@hiredrep.ai."
-        : "We received your details and will email you from john@hiredrep.ai within one business day. There is no charge now.";
-    show(stepResult);
-    submitBtn.disabled = false;
+        return;
+      }
+      showSavedResult(decision);
+      submitBtn.disabled = false;
+    });
   });
 })();
