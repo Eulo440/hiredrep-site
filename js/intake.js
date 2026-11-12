@@ -46,6 +46,19 @@
     [step1, stepReading, step2, stepResult].forEach(function (n) {
       n.classList.toggle("intake-hidden", n !== el);
     });
+    if (el === step2) {
+      var banner = document.getElementById("fit-banner");
+      if (banner) {
+        if (!banner.hasAttribute("tabindex")) banner.setAttribute("tabindex", "-1");
+        banner.focus();
+      }
+    } else if (el === stepResult) {
+      var title = document.getElementById("result-title");
+      if (title) {
+        title.setAttribute("tabindex", "-1");
+        title.focus();
+      }
+    }
   }
 
   function setError(node, message) {
@@ -53,10 +66,14 @@
     if (!message) {
       node.hidden = true;
       node.textContent = "";
+      node.removeAttribute("role");
       return;
     }
     node.hidden = false;
     node.textContent = message;
+    node.setAttribute("role", "alert");
+    node.setAttribute("tabindex", "-1");
+    node.focus();
   }
 
   function isBlockedHost(host) {
@@ -79,6 +96,17 @@
       return true; // no raw IP addresses as company websites
     }
     if (h.indexOf(":") !== -1) return true;
+    if (/(?:^|\.)((?:\d{1,3}\.){3}\d{1,3})(?:\.|$)/.test(h)) {
+      var ip = h.match(/(?:^|\.)((?:\d{1,3}\.){3}\d{1,3})(?:\.|$)/)[1];
+      var parts = ip.split(".").map(Number);
+      var a = parts[0], b = parts[1];
+      if (a === 0 || a === 10 || a === 127) return true;
+      if (a === 169 && b === 254) return true;
+      if (a === 172 && b >= 16 && b <= 31) return true;
+      if (a === 192 && b === 168) return true;
+      if (a === 100 && b >= 64 && b <= 127) return true;
+      if (a >= 224) return true;
+    }
     return false;
   }
 

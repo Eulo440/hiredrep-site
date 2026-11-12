@@ -14,8 +14,8 @@
   <meta name="twitter:card" content="summary">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/styles.css?v=3">
-  <link rel="stylesheet" href="css/intake.css?v=3">
+  <link rel="stylesheet" href="css/styles.css?v=4">
+  <link rel="stylesheet" href="css/intake.css?v=4">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -59,16 +59,16 @@
               <legend>Your company</legend>
               <div class="field">
                 <label for="website">Website <span class="req" aria-hidden="true">*</span></label>
-                <input id="website" name="website" type="text" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="https://yourcompany.com" autocomplete="url" required>
+                <input id="website" name="website" type="text" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="https://yourcompany.com" autocomplete="url" required aria-describedby="start-error">
               </div>
               <div class="field">
                 <label for="status_email">Email <span class="req" aria-hidden="true">*</span></label>
-                <input id="status_email" name="status_email" type="email" autocomplete="email" required>
+                <input id="status_email" name="status_email" type="email" autocomplete="email" required aria-describedby="start-error">
               </div>
               <div class="form-actions">
                 <button class="btn" type="submit" id="next-btn">Next</button>
               </div>
-              <p id="start-error" class="login-error" hidden></p>
+              <p id="start-error" class="login-error" hidden aria-live="assertive"></p>
             </fieldset>
           </form>
         </div>
@@ -82,7 +82,7 @@
         </div>
 
         <div id="step-2" class="intake-step intake-hidden">
-          <div id="fit-banner" class="notice fit-note" role="status"></div>
+          <div id="fit-banner" class="notice fit-note" role="status" tabindex="-1"></div>
           <form id="intake-form">
             <input type="hidden" name="fit_decision" id="fit_decision" value="">
             <input type="hidden" name="fit_reasons" id="fit_reasons" value="">
@@ -107,8 +107,8 @@
               </div>
               <div class="field">
                 <label for="postal_address">Postal mailing address <span class="req" aria-hidden="true">*</span></label>
-                <span class="help">Appears in email footers (CAN-SPAM). A PO box or PMB is fine.</span>
-                <textarea id="postal_address" name="postal_address" required placeholder="123 Main St, City, ST 00000"></textarea>
+                <span class="help" id="postal_address_help">Appears in email footers (CAN-SPAM). A PO box or PMB is fine.</span>
+                <textarea id="postal_address" name="postal_address" required placeholder="123 Main St, City, ST 00000" aria-describedby="postal_address_help"></textarea>
               </div>
             </fieldset>
 
@@ -156,8 +156,8 @@
               </div>
               <div class="field">
                 <label for="best_customers">Best current customers (optional)</label>
-                <span class="help">A few names and websites. We use these to find lookalikes.</span>
-                <textarea id="best_customers" name="best_customers" placeholder="Acme Plumbing — acmeplumbing.example"></textarea>
+                <span class="help" id="best_customers_help">A few names and websites. We use these to find lookalikes.</span>
+                <textarea id="best_customers" name="best_customers" placeholder="Acme Plumbing — acmeplumbing.example" aria-describedby="best_customers_help"></textarea>
               </div>
             </fieldset>
 
@@ -179,8 +179,8 @@
               <legend>Proof points</legend>
               <div class="field">
                 <label for="proof_points">Proof points from your site (optional)</label>
-                <span class="help">Only claims that appear on your website. We will not invent any.</span>
-                <textarea id="proof_points" name="proof_points"></textarea>
+                <span class="help" id="proof_points_help">Only claims that appear on your website. We will not invent any.</span>
+                <textarea id="proof_points" name="proof_points" aria-describedby="proof_points_help"></textarea>
               </div>
             </fieldset>
 
@@ -210,8 +210,8 @@
               </div>
               <div class="field">
                 <label for="calendar_link">Calendar booking link <span class="req" aria-hidden="true">*</span></label>
-                <span class="help">Calendly, TidyCal, or a Google Calendar booking page.</span>
-                <input id="calendar_link" name="calendar_link" type="text" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="https://calendly.com/you" required>
+                <span class="help" id="calendar_link_help">Calendly, TidyCal, or a Google Calendar booking page.</span>
+                <input id="calendar_link" name="calendar_link" type="text" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="https://calendly.com/you" required aria-describedby="calendar_link_help">
               </div>
               <div class="field">
                 <label for="qualified_meeting">What counts as a qualified meeting? <span class="req" aria-hidden="true">*</span></label>
@@ -224,22 +224,24 @@
             <fieldset>
               <legend>Sending</legend>
               <div class="field">
-                <p class="label">Sending preference <span class="req" aria-hidden="true">*</span></p>
-                <div class="choices">
-                  <label class="choice">
-                    <input type="radio" name="sending_preference" value="client_domain_mailbox" required checked>
-                    <span id="send-label-a">hiredrep@yourdomain.com — a mailbox on your own domain (recommended)</span>
-                  </label>
-                  <label class="choice">
-                    <input type="radio" name="sending_preference" value="gethiredrep_mailbox">
-                    <span id="send-label-b">yourcompany@gethiredrep.com — we set it up for you, same day</span>
-                  </label>
-                </div>
+                <fieldset class="sending-preference">
+                  <legend>Sending preference <span class="req" aria-hidden="true">*</span></legend>
+                  <div class="choices">
+                    <label class="choice">
+                      <input type="radio" name="sending_preference" value="client_domain_mailbox" required checked>
+                      <span id="send-label-a">hiredrep@yourdomain.com — a mailbox on your own domain (recommended)</span>
+                    </label>
+                    <label class="choice">
+                      <input type="radio" name="sending_preference" value="gethiredrep_mailbox">
+                      <span id="send-label-b">yourcompany@gethiredrep.com — we set it up for you, same day</span>
+                    </label>
+                  </div>
+                </fieldset>
               </div>
               <div class="field">
                 <label for="dnc_list">Do-not-contact list (optional)</label>
-                <span class="help">Companies or domains we must never email. Leave as none if you have no one to exclude.</span>
-                <textarea id="dnc_list" name="dnc_list" placeholder="none">none</textarea>
+                <span class="help" id="dnc_list_help">Companies or domains we must never email. Leave as none if you have no one to exclude.</span>
+                <textarea id="dnc_list" name="dnc_list" placeholder="none" aria-describedby="dnc_list_help">none</textarea>
               </div>
             </fieldset>
 
@@ -253,7 +255,7 @@
                 <button class="btn" type="submit" id="submit-btn">Submit and start your free month</button>
               </div>
               <p class="fine-print" id="pay-note">Card required. You pay $0 today. Your first $100 charge is on day 31, and you can cancel anytime before then from your account.</p>
-              <p id="submit-error" class="login-error" hidden></p>
+              <p id="submit-error" class="login-error" hidden aria-live="assertive"></p>
             </fieldset>
           </form>
         </div>
@@ -287,6 +289,6 @@
     </div>
   </footer>
   <script src="js/main.js?v=3"></script>
-  <script src="js/intake.js?v=11"></script>
+  <script src="js/intake.js?v=12"></script>
 </body>
 </html>
