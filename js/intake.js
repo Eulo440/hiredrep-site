@@ -1,7 +1,6 @@
 (function () {
   var STRIPE_LINK = "https://buy.stripe.com/6oU28q4Pj2nr8fEgHD3ZK00";
   var STRIPE_NO_TRIAL_LINK = "https://buy.stripe.com/3cIaEW1D73rv8fE4YV3ZK01";
-  var FORMSUBMIT = "https://formsubmit.co/ajax/john@hiredrep.ai";
   var DEFAULT_API = "http://127.0.0.1:8787/analyze";
   var AGREE_TRIAL = "I understand that HiredRep is an AI-run outbound service, that I will take the meetings it books, and that starting the free month on Stripe requires a card ($0 today, then $100 a month after 30 days unless I cancel before then). I can cancel anytime; no refunds on months already started. HiredRep only emails business contacts in the United States.";
   var AGREE_NO_TRIAL = "I understand that HiredRep is an AI-run outbound service, that I will take the meetings it books, and that starting at $100 a month on Stripe requires a card (charged $100 today, then $100 a month). I can cancel anytime; no refunds on months already started. HiredRep only emails business contacts in the United States.";
@@ -382,6 +381,7 @@
     });
     var fields = payload.fields || {};
     Object.keys(fields).forEach(function (name) {
+      if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) return;
       var nodes = intakeForm.querySelectorAll("[name='" + name + "']");
       if (!nodes.length) {
         var byId = document.getElementById(name);
@@ -402,6 +402,8 @@
     var reasons = fields.fit_reasons ? String(fields.fit_reasons).split(" | ") : ((payload.prefill && payload.prefill.fit && payload.prefill.fit.reasons) || []);
     var trial = payload.prefill && payload.prefill.fit ? payload.prefill.fit.trial : undefined;
     applyDecision(decision, reasons, trial);
+    var inferred = (payload.prefill && payload.prefill.inferred) || (payload.draft && payload.draft.inferred) || [];
+    if (inferred.length) markSuggested(inferred);
   }
 
   function tryResume() {
@@ -413,7 +415,9 @@
       .then(function (res) { return res.json().then(function (data) { return { res: res, data: data }; }); })
       .then(function (out) {
         if (!out.data || !out.data.ok) {
-          setError(startError, "We could not find that saved form. Enter your website and email to start again.");
+          setError(startError, out.data && out.data.expired
+            ? "This resume link has expired. Enter your website and email to start again."
+            : "We could not find that saved form. Enter your website and email to start again.");
           show(step1);
           return;
         }
@@ -509,18 +513,6 @@
     });
   }
 
-  function notifyJohn(data) {
-    // Fire-and-forget so Formsubmit never delays the Stripe redirect.
-    try {
-      fetch(FORMSUBMIT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(data),
-        keepalive: true,
-      }).catch(function () { return null; });
-    } catch (e) { /* ignore */ }
-  }
-
   function showSavedResult(decision) {
     document.getElementById("result-title").textContent =
       decision === "decline" ? "Thank you for considering HiredRep." : "We'll confirm within one business day.";
@@ -553,8 +545,6 @@
     var submitBtn = document.getElementById("submit-btn");
     submitting = true;
     submitBtn.disabled = true;
-
-    notifyJohn(data);
 
     saveIntake(data).then(function (saved) {
       if (!saved || !saved.ok) {
