@@ -154,7 +154,6 @@
     setVal("proof_points", Array.isArray(draft.proof_points) ? draft.proof_points.join("\n") : (draft.proof_points || ""));
     setVal("great_fit", draft.great_fit || "");
     setVal("bad_fit", draft.bad_fit || "");
-    setVal("tone", draft.tone || "");
     setVal("suggested_sender_name", draft.suggested_sender_name || "");
     setVal("qualified_meeting", draft.qualified_meeting || "");
     setVal("calendar_link", draft.calendar_link || "");
