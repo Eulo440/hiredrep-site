@@ -364,7 +364,7 @@
     if (autosaveTimer) clearTimeout(autosaveTimer);
     autosaveTimer = setTimeout(function () {
       savePartial({ source: "autosave" });
-    }, 20000);
+    }, 30000);
   }
 
   function applyResumePayload(payload) {
@@ -454,35 +454,63 @@
       return;
     }
     show(stepReading);
+    postAnalyze(website, email).then(function (out) {
+      if (!out || !out.ok) {
+        showFallback(website, email, (out && out.data && out.data.error) || "We could not finish setup.");
+        return;
+      }
+      if (out.data.resume_token) setResumeToken(out.data.resume_token);
+      fillDraft(website, email, out.data);
+      var decision = (out.data.draft && out.data.draft.fit && out.data.draft.fit.decision) || "review";
+      var reasons = (out.data.draft && out.data.draft.fit && out.data.draft.fit.reasons) || [];
+      var trial = out.data.draft && out.data.draft.fit ? out.data.draft.fit.trial : undefined;
+      applyDecision(decision, reasons, trial);
+      show(step2);
+      savePartial({ website: website, email: email, prefill: out.data.draft || null, source: "step1" });
+    });
+  });
+
+  function postAnalyze(website, email) {
+    return analyzeOnce(website, email, 25000).then(function (out) {
+      if (out.ok) return out;
+      if (!shouldRetryAnalyze(out)) return out;
+      return analyzeOnce(website, email, 25000);
+    }).catch(function () {
+      return { ok: false, data: null };
+    });
+  }
+
+  function shouldRetryAnalyze(out) {
+    if (!out || out.ok) return false;
+    if (out.ms > 3000) return false;
+    var status = out.status || (out.res && out.res.status) || 0;
+    if (status && status < 500 && status !== 0 && status !== 429) return false;
+    return true;
+  }
+
+  function analyzeOnce(website, email, timeoutMs) {
     var controller = new AbortController();
-    var timer = setTimeout(function () { controller.abort(); }, 25000);
-    fetch(apiUrl("/analyze"), {
+    var timer = setTimeout(function () { controller.abort(); }, timeoutMs);
+    var started = Date.now();
+    return fetch(apiUrl("/analyze"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ website: website, email: email }),
       signal: controller.signal,
-    })
-      .then(function (res) { return res.json().then(function (data) { return { res: res, data: data }; }); })
-      .then(function (out) {
-        clearTimeout(timer);
-        if (!out.data || !out.data.ok) {
-          showFallback(website, email, (out.data && out.data.error) || "We could not finish setup.");
-          return;
-        }
-        if (out.data.resume_token) setResumeToken(out.data.resume_token);
-        fillDraft(website, email, out.data);
-        var decision = (out.data.draft && out.data.draft.fit && out.data.draft.fit.decision) || "review";
-        var reasons = (out.data.draft && out.data.draft.fit && out.data.draft.fit.reasons) || [];
-        var trial = out.data.draft && out.data.draft.fit ? out.data.draft.fit.trial : undefined;
-        applyDecision(decision, reasons, trial);
-        show(step2);
-        savePartial({ website: website, email: email, prefill: out.data.draft || null, source: "step1" });
-      })
-      .catch(function () {
-        clearTimeout(timer);
-        showFallback(website, email, "We could not finish setup.");
+    }).then(function (res) {
+      return res.json().then(function (data) {
+        return { res: res, data: data, status: res.status, ms: Date.now() - started, ok: !!(data && data.ok) };
+      }).catch(function () {
+        return { res: res, data: null, status: res.status, ms: Date.now() - started, ok: false };
       });
-  });
+    }).then(function (out) {
+      clearTimeout(timer);
+      return out;
+    }).catch(function () {
+      clearTimeout(timer);
+      return { res: null, data: null, status: 0, ms: Date.now() - started, ok: false, network: true };
+    });
+  }
 
   function collectPayload() {
     var data = {};
@@ -577,9 +605,9 @@
   }
   setInterval(function () {
     if (step2.classList.contains("intake-hidden")) return;
-    if (Date.now() - lastAutosaveAt < 20000) return;
+    if (Date.now() - lastAutosaveAt < 30000) return;
     savePartial({ source: "interval" });
-  }, 20000);
+  }, 30000);
 
   tryResume();
 })();
