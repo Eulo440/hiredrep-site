@@ -1,0 +1,16 @@
+/* Extra styles for the two-step intake; used with the main HiredRep stylesheet. */
+.intake-step { max-width: 40rem; }
+.intake-status {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 1.5rem 1.4rem;
+  margin: 0 0 1.5rem;
+}
+.intake-status p { margin: 0.4rem 0 0; color: var(--ink-2); }
+.intake-status .eyebrow { margin-bottom: 0.35rem; }
+.intake-hidden { display: none !important; }
+.fit-note {
+  margin: 0 0 1.25rem;
+}
+.choice small { margin-top: 0.15rem; }
