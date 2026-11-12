@@ -9,7 +9,7 @@
   function apiUrl(path) {
     path = path || "/analyze";
     var params = new URLSearchParams(location.search);
-    if (params.get("api")) {
+    if (params.get("api") && location.hostname !== "hiredrep.ai" && location.hostname !== "www.hiredrep.ai") {
       try {
         var override = new URL(params.get("api"), location.href);
         override.pathname = path;
@@ -60,9 +60,43 @@
     node.textContent = message;
   }
 
+  function isBlockedHost(host) {
+    var h = String(host || "").toLowerCase().replace(/^\[|\]$/g, "");
+    if (!h) return true;
+    if (h === "localhost" || h === "localhost.localdomain" || h === "127.0.0.1" || h === "0.0.0.0" || h === "::1") return true;
+    if (h === "metadata.google.internal" || h === "metadata.google.com" || h === "169.254.169.254") return true;
+    if (/\.(local|internal|localhost|lan|home|corp)$/.test(h)) return true;
+    var m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(h);
+    if (m) {
+      var o = [Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4])];
+      if (o.some(function (n) { return n > 255; })) return true;
+      var a = o[0], b = o[1];
+      if (a === 0 || a === 10 || a === 127) return true;
+      if (a === 169 && b === 254) return true;
+      if (a === 172 && b >= 16 && b <= 31) return true;
+      if (a === 192 && b === 168) return true;
+      if (a === 100 && b >= 64 && b <= 127) return true;
+      if (a >= 224) return true;
+      return true; // no raw IP addresses as company websites
+    }
+    if (h.indexOf(":") !== -1) return true;
+    return false;
+  }
+
+  function escapeHtml(s) {
+    return String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function normalizeUrl(value) {
     var raw = String(value || "").trim();
     if (!raw) {
+      return { ok: false, url: "", error: "Enter a web address like amazon.com or https://amazon.com." };
+    }
+    if (raw.length > 2048) {
       return { ok: false, url: "", error: "Enter a web address like amazon.com or https://amazon.com." };
     }
     if (!/^[a-z][a-z0-9+.-]*:/i.test(raw)) raw = "https://" + raw;
@@ -75,10 +109,14 @@
     if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
       return { ok: false, url: "", error: "Enter a web address like amazon.com or https://amazon.com." };
     }
-    var host = (parsed.hostname || "").toLowerCase();
-    if (!host || host.indexOf(".") === -1) {
+    if (parsed.username || parsed.password) {
       return { ok: false, url: "", error: "Enter a web address like amazon.com or https://amazon.com." };
     }
+    var host = (parsed.hostname || "").toLowerCase();
+    if (!host || host.indexOf(".") === -1 || isBlockedHost(host)) {
+      return { ok: false, url: "", error: "Enter a web address like amazon.com or https://amazon.com." };
+    }
+    parsed.hash = "";
     return { ok: true, url: parsed.toString(), error: "" };
   }
 
@@ -221,14 +259,12 @@
   }
 
   function showFallback(website, email, message) {
-    fillDraft(website, email, { website: website, draft: { fit: { decision: "review", reasons: ["Site reading failed; short form used."] } }, source: "fallback" });
-    applyDecision("accept", []);
+    var reasons = ["Site reading failed; short form used."];
+    fillDraft(website, email, { website: website, draft: { fit: { decision: "review", reasons: reasons } }, source: "fallback" });
+    applyDecision("review", reasons);
+    var detail = escapeHtml(message || "We could not finish reading that website.");
     document.getElementById("fit-banner").innerHTML =
-      "<p>" + (message || "We could not finish setup.") + " Fill in this form to continue.</p>";
-    document.getElementById("fit_decision").value = "accept";
-    document.getElementById("submit-btn").textContent = "Submit and start your free month";
-    document.getElementById("pay-note").hidden = false;
-    document.getElementById("agree_service").required = true;
+      "<p>" + detail + " Fill in this form to continue. We'll confirm within one business day. There is no charge now.</p>";
     show(step2);
     savePartial({ website: website, email: email, source: "step1-fallback" });
   }
@@ -253,6 +289,15 @@
     resumeToken = token || "";
     var hidden = document.getElementById("resume_token");
     if (hidden) hidden.value = resumeToken;
+    if (token && window.history && window.history.replaceState) {
+      try {
+        var next = new URL(location.href);
+        if (next.searchParams.get("resume") !== token) {
+          next.searchParams.set("resume", token);
+          history.replaceState(null, "", next.pathname + next.search + next.hash);
+        }
+      } catch (e) { /* ignore */ }
+    }
   }
 
   function currentEmail() {
@@ -486,8 +531,10 @@
     show(stepResult);
   }
 
+  var submitting = false;
   intakeForm.addEventListener("submit", function (event) {
     event.preventDefault();
+    if (submitting) return;
     var err = document.getElementById("submit-error");
     setError(err, "");
     var calendarInput = document.getElementById("calendar_link");
@@ -504,6 +551,7 @@
     var decision = document.getElementById("fit_decision").value || "review";
     var data = collectPayload();
     var submitBtn = document.getElementById("submit-btn");
+    submitting = true;
     submitBtn.disabled = true;
 
     notifyJohn(data);
@@ -511,6 +559,7 @@
     saveIntake(data).then(function (saved) {
       if (!saved || !saved.ok) {
         setError(err, "We could not save your details just now. Please email john@hiredrep.ai or try again.");
+        submitting = false;
         submitBtn.disabled = false;
         return;
       }
@@ -521,6 +570,7 @@
         return;
       }
       showSavedResult(decision);
+      submitting = false;
       submitBtn.disabled = false;
     });
   });
