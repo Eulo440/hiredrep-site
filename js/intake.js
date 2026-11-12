@@ -39,6 +39,9 @@
   var stepResult = document.getElementById("step-result");
   var startError = document.getElementById("start-error");
   var intakeForm = document.getElementById("intake-form");
+  var resumeToken = "";
+  var autosaveTimer = null;
+  var lastAutosaveAt = 0;
 
   function show(el) {
     [step1, stepReading, step2, stepResult].forEach(function (n) {
@@ -227,6 +230,7 @@
     document.getElementById("pay-note").hidden = false;
     document.getElementById("agree_service").required = true;
     show(step2);
+    savePartial({ website: website, email: email, source: "step1-fallback" });
   }
 
   ["website", "website_found", "calendar_link"].forEach(function (id) {
@@ -243,6 +247,148 @@
       applyNormalizedUrl(el, { required: required, errorNode: errorNode });
     });
   });
+
+
+  function setResumeToken(token) {
+    resumeToken = token || "";
+    var hidden = document.getElementById("resume_token");
+    if (hidden) hidden.value = resumeToken;
+  }
+
+  function currentEmail() {
+    return (
+      (document.getElementById("status_email_confirm") && document.getElementById("status_email_confirm").value) ||
+      (document.getElementById("status_email") && document.getElementById("status_email").value) ||
+      ""
+    ).trim();
+  }
+
+  function currentWebsite() {
+    return (
+      (document.getElementById("website_found") && document.getElementById("website_found").value) ||
+      (document.getElementById("website") && document.getElementById("website").value) ||
+      ""
+    ).trim();
+  }
+
+  function collectFields() {
+    var data = {};
+    if (!intakeForm) return data;
+    Array.prototype.forEach.call(intakeForm.elements, function (el) {
+      if (!el.name || el.disabled) return;
+      if (el.name === "agree_service" || el.name === "resume_token") return;
+      if ((el.type === "radio" || el.type === "checkbox") && !el.checked) return;
+      data[el.name] = el.value;
+    });
+    return data;
+  }
+
+  function savePartial(extra) {
+    extra = extra || {};
+    var website = extra.website || currentWebsite();
+    var email = extra.email || currentEmail();
+    if (!website || !email) return Promise.resolve(null);
+    var body = {
+      token: resumeToken || extra.token || "",
+      website: website,
+      email: email,
+      fields: extra.fields || collectFields(),
+      source: extra.source || "autosave",
+    };
+    if (extra.prefill) body.prefill = extra.prefill;
+    return fetch(apiUrl("/partial"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      keepalive: body.source === "autosave",
+    })
+      .then(function (res) {
+        return res.json().then(function (data) {
+          return data && typeof data === "object" ? data : null;
+        }).catch(function () { return null; });
+      })
+      .then(function (data) {
+        if (data && data.ok && data.token) setResumeToken(data.token);
+        lastAutosaveAt = Date.now();
+        return data;
+      })
+      .catch(function () { return null; });
+  }
+
+  function scheduleAutosave() {
+    if (step2.classList.contains("intake-hidden")) return;
+    if (autosaveTimer) clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(function () {
+      savePartial({ source: "autosave" });
+    }, 20000);
+  }
+
+  function applyResumePayload(payload) {
+    var email = payload.email || "";
+    var website = payload.website || "";
+    var startWebsite = document.getElementById("website");
+    var startEmail = document.getElementById("status_email");
+    if (startWebsite && website) startWebsite.value = website;
+    if (startEmail && email) startEmail.value = email;
+    fillDraft(website, email, {
+      website: website,
+      draft: payload.prefill || {},
+      source: (payload.fields && payload.fields.analyze_source) || "resume",
+    });
+    var fields = payload.fields || {};
+    Object.keys(fields).forEach(function (name) {
+      var nodes = intakeForm.querySelectorAll("[name='" + name + "']");
+      if (!nodes.length) {
+        var byId = document.getElementById(name);
+        if (byId) byId.value = fields[name];
+        return;
+      }
+      Array.prototype.forEach.call(nodes, function (el) {
+        if (el.type === "radio") {
+          el.checked = el.value === fields[name];
+        } else if (el.type === "checkbox") {
+          el.checked = fields[name] === el.value || fields[name] === "yes";
+        } else {
+          el.value = fields[name];
+        }
+      });
+    });
+    var decision = (fields.fit_decision) || (payload.prefill && payload.prefill.fit && payload.prefill.fit.decision) || "review";
+    var reasons = fields.fit_reasons ? String(fields.fit_reasons).split(" | ") : ((payload.prefill && payload.prefill.fit && payload.prefill.fit.reasons) || []);
+    var trial = payload.prefill && payload.prefill.fit ? payload.prefill.fit.trial : undefined;
+    applyDecision(decision, reasons, trial);
+  }
+
+  function tryResume() {
+    var params = new URLSearchParams(location.search);
+    var token = (params.get("resume") || "").trim();
+    if (!token) return false;
+    show(stepReading);
+    fetch(apiUrl("/partial") + (apiUrl("/partial").indexOf("?") >= 0 ? "&" : "?") + "token=" + encodeURIComponent(token))
+      .then(function (res) { return res.json().then(function (data) { return { res: res, data: data }; }); })
+      .then(function (out) {
+        if (!out.data || !out.data.ok) {
+          setError(startError, "We could not find that saved form. Enter your website and email to start again.");
+          show(step1);
+          return;
+        }
+        setResumeToken(out.data.token || token);
+        if (out.data.status === "complete") {
+          document.getElementById("result-title").textContent = "We already have your intake.";
+          document.getElementById("result-body").textContent =
+            "Thanks — your HiredRep onboarding details are already saved. If you have questions, email john@hiredrep.ai.";
+          show(stepResult);
+          return;
+        }
+        applyResumePayload(out.data);
+        show(step2);
+      })
+      .catch(function () {
+        setError(startError, "We could not load your saved form. Enter your website and email to start again.");
+        show(step1);
+      });
+    return true;
+  }
 
   startForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -274,12 +420,14 @@
           showFallback(website, email, (out.data && out.data.error) || "We could not finish setup.");
           return;
         }
+        if (out.data.resume_token) setResumeToken(out.data.resume_token);
         fillDraft(website, email, out.data);
         var decision = (out.data.draft && out.data.draft.fit && out.data.draft.fit.decision) || "review";
         var reasons = (out.data.draft && out.data.draft.fit && out.data.draft.fit.reasons) || [];
         var trial = out.data.draft && out.data.draft.fit ? out.data.draft.fit.trial : undefined;
         applyDecision(decision, reasons, trial);
         show(step2);
+        savePartial({ website: website, email: email, prefill: out.data.draft || null, source: "step1" });
       })
       .catch(function () {
         clearTimeout(timer);
@@ -298,6 +446,7 @@
     var company = data.company_name || "unknown";
     data._subject = "HiredRep intake: " + decision + ": " + company;
     if (data.status_email && !data._replyto) data._replyto = data.status_email;
+    if (resumeToken) data.resume_token = resumeToken;
     return data;
   }
 
@@ -375,4 +524,22 @@
       submitBtn.disabled = false;
     });
   });
+
+  if (intakeForm) {
+    intakeForm.addEventListener("blur", function (event) {
+      if (!event.target || !event.target.name) return;
+      if (step2.classList.contains("intake-hidden")) return;
+      if (autosaveTimer) clearTimeout(autosaveTimer);
+      savePartial({ source: "blur" });
+    }, true);
+    intakeForm.addEventListener("input", scheduleAutosave);
+    intakeForm.addEventListener("change", scheduleAutosave);
+  }
+  setInterval(function () {
+    if (step2.classList.contains("intake-hidden")) return;
+    if (Date.now() - lastAutosaveAt < 20000) return;
+    savePartial({ source: "interval" });
+  }, 20000);
+
+  tryResume();
 })();
