@@ -1,15 +1,32 @@
 (function () {
   var STRIPE_LINK = "https://buy.stripe.com/6oU28q4Pj2nr8fEgHD3ZK00";
-  var FORMSUBMIT = "https://formsubmit.co/ajax/john@hiredrep.ai";
+  var STRIPE_NO_TRIAL_LINK = "https://buy.stripe.com/3cIaEW1D73rv8fE4YV3ZK01";
   var DEFAULT_API = "http://127.0.0.1:8787/analyze";
+  var AGREE_TRIAL = "I understand that HiredRep is an AI-run outbound service, that I will take the meetings it books, and that starting the free month on Stripe requires a card ($0 today, then $100 a month after 30 days unless I cancel before then). I can cancel anytime; no refunds on months already started. HiredRep only emails business contacts in the United States.";
+  var AGREE_NO_TRIAL = "I understand that HiredRep is an AI-run outbound service, that I will take the meetings it books, and that starting at $100 a month on Stripe requires a card (charged $100 today, then $100 a month). I can cancel anytime; no refunds on months already started. HiredRep only emails business contacts in the United States.";
 
-  function apiUrl() {
+  function apiUrl(path) {
+    path = path || "/analyze";
     var params = new URLSearchParams(location.search);
-    if (params.get("api")) return params.get("api");
-    if (location.hostname === "hiredrep.ai" || location.hostname === "www.hiredrep.ai") {
-      return "https://hiredrep-intake.hiredrep.workers.dev/analyze";
+    if (params.get("api")) {
+      try {
+        var override = new URL(params.get("api"), location.href);
+        override.pathname = path;
+        return override.toString();
+      } catch (e) {
+        return params.get("api");
+      }
     }
-    return DEFAULT_API;
+    if (location.hostname === "hiredrep.ai" || location.hostname === "www.hiredrep.ai") {
+      return "https://hiredrep-intake.hiredrep.workers.dev" + path;
+    }
+    try {
+      var local = new URL(DEFAULT_API);
+      local.pathname = path;
+      return local.toString();
+    } catch (e) {
+      return DEFAULT_API;
+    }
   }
 
   var startForm = document.getElementById("start-form");
@@ -101,12 +118,28 @@
     if (el) el.value = value == null ? "" : value;
   }
 
+  function clearSuggested() {
+    Array.prototype.forEach.call(document.querySelectorAll(".field.is-suggested"), function (el) {
+      el.classList.remove("is-suggested");
+    });
+  }
+
+  function markSuggested(ids) {
+    clearSuggested();
+    (ids || []).forEach(function (id) {
+      var input = document.getElementById(id);
+      if (!input || !(input.value || "").trim()) return;
+      var field = input.closest(".field");
+      if (field) field.classList.add("is-suggested");
+    });
+  }
+
   function fillDraft(website, email, payload) {
     var draft = (payload && payload.draft) || {};
     var ic = draft.ideal_customers || {};
     var host = domainFromWebsite(payload && payload.website ? payload.website : website);
-    setVal("website_found", (payload && payload.website) || website);
-    setVal("status_email_confirm", email);
+    setVal("website_found", (payload && payload.website) || website || "");
+    setVal("status_email_confirm", email || "");
     setVal("company_name", draft.company_name || "");
     setVal("phone", draft.phone || "");
     setVal("postal_address", draft.address || "");
@@ -116,13 +149,17 @@
     setVal("ideal_titles", ic.titles || "");
     setVal("ideal_size", ic.size || "");
     setVal("ideal_geo", ic.geo || "");
-    setVal("best_customers", draft.best_customers || "");
-    setVal("proof_points", (draft.proof_points || []).join("\n"));
+    setVal("best_customers", Array.isArray(draft.best_customers) ? draft.best_customers.join("\n") : (draft.best_customers || ""));
+    setVal("proof_points", Array.isArray(draft.proof_points) ? draft.proof_points.join("\n") : (draft.proof_points || ""));
+    setVal("great_fit", draft.great_fit || "");
+    setVal("bad_fit", draft.bad_fit || "");
     setVal("tone", draft.tone || "");
     setVal("suggested_sender_name", draft.suggested_sender_name || "");
     setVal("qualified_meeting", draft.qualified_meeting || "");
+    setVal("calendar_link", draft.calendar_link || "");
     setVal("meeting_owner_email", email);
-    if (draft.suggested_sender_name) setVal("meeting_owner_name", draft.suggested_sender_name);
+    if (draft.meeting_owner_name) setVal("meeting_owner_name", draft.meeting_owner_name);
+    else if (draft.suggested_sender_name) setVal("meeting_owner_name", draft.suggested_sender_name);
     var sendA = document.getElementById("send-label-a");
     var sendB = document.getElementById("send-label-b");
     if (sendA) sendA.textContent = "hiredrep@" + host + " — a mailbox on your own domain (recommended)";
@@ -131,9 +168,15 @@
     setVal("fit_reasons", ((draft.fit && draft.fit.reasons) || []).join(" | "));
     setVal("pages_read", ((payload && payload.pages_read) || []).join("\n"));
     setVal("analyze_source", (payload && payload.source) || "");
+    markSuggested(draft.inferred || []);
   }
 
-  function applyDecision(decision, reasons) {
+  function setAgreeCopy(text) {
+    var el = document.getElementById("agree-copy");
+    if (el) el.textContent = text;
+  }
+
+  function applyDecision(decision, reasons, trial) {
     var banner = document.getElementById("fit-banner");
     var submitBtn = document.getElementById("submit-btn");
     var payNote = document.getElementById("pay-note");
@@ -144,19 +187,34 @@
       submitBtn.textContent = "Send this note";
       payNote.hidden = true;
       agree.required = false;
+      setAgreeCopy(AGREE_TRIAL);
       return;
     }
     if (decision === "review") {
-      banner.innerHTML = "<p>Thanks — we'll confirm within one business day. There is no charge now.</p>";
+      banner.innerHTML = trial === false
+        ? "<p>Thanks — we'll confirm within one business day. There is no free month on this signup, and there is no charge now.</p>"
+        : "<p>Thanks — we'll confirm within one business day. There is no charge now.</p>";
       submitBtn.textContent = "Send these details";
       payNote.hidden = true;
       agree.required = false;
+      setAgreeCopy(AGREE_TRIAL);
       return;
     }
-    banner.innerHTML = "<p>We can take this from here. Confirm the details below and start your free month.</p>";
+    if (decision === "returning") {
+      banner.innerHTML = "<p>This company has already used its free month. You can start HiredRep at $100 a month with no trial.</p>";
+      submitBtn.textContent = "Submit and start at $100 a month";
+      payNote.hidden = false;
+      payNote.textContent = "Card required. You will be charged $100 today, then $100 a month. You can cancel anytime from your account.";
+      agree.required = true;
+      setAgreeCopy(AGREE_NO_TRIAL);
+      return;
+    }
+    banner.innerHTML = "<p>Here's what we found. Check the details below, fill in anything missing, and start your free month.</p>";
     submitBtn.textContent = "Submit and start your free month";
     payNote.hidden = false;
+    payNote.textContent = "Card required. You pay $0 today. Your first $100 charge is on day 31, and you can cancel anytime before then from your account.";
     agree.required = true;
+    setAgreeCopy(AGREE_TRIAL);
   }
 
   function showFallback(website, email, message) {
@@ -203,7 +261,7 @@
     show(stepReading);
     var controller = new AbortController();
     var timer = setTimeout(function () { controller.abort(); }, 25000);
-    fetch(apiUrl(), {
+    fetch(apiUrl("/analyze"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ website: website, email: email }),
@@ -219,7 +277,8 @@
         fillDraft(website, email, out.data);
         var decision = (out.data.draft && out.data.draft.fit && out.data.draft.fit.decision) || "review";
         var reasons = (out.data.draft && out.data.draft.fit && out.data.draft.fit.reasons) || [];
-        applyDecision(decision, reasons);
+        var trial = out.data.draft && out.data.draft.fit ? out.data.draft.fit.trial : undefined;
+        applyDecision(decision, reasons, trial);
         show(step2);
       })
       .catch(function () {
@@ -239,12 +298,16 @@
     return data;
   }
 
-  function notifyJohn(data) {
-    return fetch(FORMSUBMIT, {
+  function claimSignup(website, email) {
+    return fetch(apiUrl("/claim"), {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(data),
-    }).catch(function () { return null; });
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ website: website, email: email }),
+    }).then(function (res) {
+      return res.json().catch(function () { return { ok: false }; });
+    }).catch(function () {
+      return { ok: false };
+    });
   }
 
   intakeForm.addEventListener("submit", function (event) {
@@ -266,25 +329,25 @@
     var data = collectPayload();
     var submitBtn = document.getElementById("submit-btn");
     submitBtn.disabled = true;
+    var website = (data.website || foundInput.value || "").trim();
+    var email = (data.status_email || document.getElementById("status_email").value || "").trim();
 
-    if (decision === "accept") {
-      notifyJohn(data);
-      window.location.href = STRIPE_LINK;
+    if (decision === "accept" || decision === "returning") {
+      claimSignup(website, email).then(function (claim) {
+        var already = claim && claim.already;
+        var link = decision === "returning" || already ? STRIPE_NO_TRIAL_LINK : STRIPE_LINK;
+        window.location.href = link;
+      });
       return;
     }
 
-    notifyJohn(data).then(function () {
-      document.getElementById("result-title").textContent =
-        decision === "decline" ? "Thank you for considering HiredRep." : "We'll confirm within one business day.";
-      document.getElementById("result-body").textContent =
-        decision === "decline"
-          ? "HiredRep is not the right fit in this case, so we have not started a free month or taken a card. If you have questions, email john@hiredrep.ai."
-          : "We received your details and will email you from john@hiredrep.ai within one business day. There is no charge now.";
-      show(stepResult);
-      submitBtn.disabled = false;
-    }).catch(function () {
-      setError(err, "We could not send that just now. Please email john@hiredrep.ai.");
-      submitBtn.disabled = false;
-    });
+    document.getElementById("result-title").textContent =
+      decision === "decline" ? "Thank you for considering HiredRep." : "We'll confirm within one business day.";
+    document.getElementById("result-body").textContent =
+      decision === "decline"
+        ? "HiredRep is not the right fit in this case, so we have not started a free month or taken a card. If you have questions, email john@hiredrep.ai."
+        : "We received your details and will email you from john@hiredrep.ai within one business day. There is no charge now.";
+    show(stepResult);
+    submitBtn.disabled = false;
   });
 })();

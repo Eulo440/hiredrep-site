@@ -34,3 +34,11 @@
   appearance: none;
 }
 .intake textarea { min-height: 5.5rem; resize: vertical; }
+
+.suggest-hint {
+  display: none;
+  margin: 0.25rem 0 0;
+  color: var(--muted, #6b6a66);
+  font-size: 0.8rem;
+}
+.field.is-suggested .suggest-hint { display: block; }

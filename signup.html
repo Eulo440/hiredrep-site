@@ -8,7 +8,7 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="css/styles.css?v=3">
-  <link rel="stylesheet" href="css/intake.css?v=2">
+  <link rel="stylesheet" href="css/intake.css?v=3">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -113,6 +113,8 @@
               <div class="field">
                 <label for="problem_why_now">Problem you solve, and why buyers act now (optional)</label>
                 <textarea id="problem_why_now" name="problem_why_now"></textarea>
+              
+                <span class="suggest-hint">Suggested, please check</span>
               </div>
             </fieldset>
 
@@ -121,25 +123,47 @@
               <div class="field">
                 <label for="ideal_industries">Industries (optional)</label>
                 <input id="ideal_industries" name="ideal_industries" type="text">
+              
+                <span class="suggest-hint">Suggested, please check</span>
               </div>
               <div class="grid-2">
                 <div class="field">
                   <label for="ideal_titles">Titles (optional)</label>
                   <input id="ideal_titles" name="ideal_titles" type="text">
-                </div>
+                
+                <span class="suggest-hint">Suggested, please check</span>
+              </div>
                 <div class="field">
                   <label for="ideal_size">Company size (optional)</label>
                   <input id="ideal_size" name="ideal_size" type="text">
-                </div>
+                
+                <span class="suggest-hint">Suggested, please check</span>
+              </div>
               </div>
               <div class="field">
                 <label for="ideal_geo">Geography (optional)</label>
                 <input id="ideal_geo" name="ideal_geo" type="text">
+              
+                <span class="suggest-hint">Suggested, please check</span>
               </div>
               <div class="field">
                 <label for="best_customers">Best current customers (optional)</label>
                 <span class="help">A few names and websites. We use these to find lookalikes.</span>
                 <textarea id="best_customers" name="best_customers" placeholder="Acme Plumbing — acmeplumbing.example"></textarea>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Who is a fit</legend>
+              <div class="field">
+                <label for="great_fit">Great-fit companies (optional)</label>
+                <textarea id="great_fit" name="great_fit"></textarea>
+                <span class="suggest-hint">Suggested, please check</span>
+              </div>
+              <div class="field">
+                <label for="bad_fit">Poor-fit companies (optional)</label>
+                <textarea id="bad_fit" name="bad_fit"></textarea>
+                <span class="suggest-hint">Suggested, please check</span>
               </div>
             </fieldset>
 
@@ -158,6 +182,8 @@
                 <label for="tone">Tone preference (optional)</label>
                 <span class="help">For example: direct, warm, or formal. Any phrases to use or avoid?</span>
                 <textarea id="tone" name="tone" placeholder="Direct, no slang."></textarea>
+              
+                <span class="suggest-hint">Suggested, please check</span>
               </div>
               <div class="field">
                 <label for="suggested_sender_name">Sender name on outbound (optional)</label>
@@ -185,6 +211,8 @@
               <div class="field">
                 <label for="qualified_meeting">What counts as a qualified meeting? <span class="req" aria-hidden="true">*</span></label>
                 <textarea id="qualified_meeting" name="qualified_meeting" required placeholder="A facilities or property lead with a live site, ready to talk this quarter."></textarea>
+              
+                <span class="suggest-hint">Suggested, please check</span>
               </div>
             </fieldset>
 
@@ -214,7 +242,7 @@
               <legend>Before you go</legend>
               <label class="check">
                 <input type="checkbox" name="agree_service" id="agree_service" value="yes" required>
-                <span>I understand that HiredRep is an AI-run outbound service, that I will take the meetings it books, and that starting the free month on Stripe requires a card ($0 today, then $100 a month after 30 days unless I cancel before then). I can cancel anytime; no refunds on months already started. HiredRep only emails business contacts in the United States.</span>
+                <span id="agree-copy">I understand that HiredRep is an AI-run outbound service, that I will take the meetings it books, and that starting the free month on Stripe requires a card ($0 today, then $100 a month after 30 days unless I cancel before then). I can cancel anytime; no refunds on months already started. HiredRep only emails business contacts in the United States.</span>
               </label>
               <div class="form-actions">
                 <button class="btn" type="submit" id="submit-btn">Submit and start your free month</button>
@@ -254,6 +282,6 @@
     </div>
   </footer>
   <script src="js/main.js?v=3"></script>
-  <script src="js/intake.js?v=4"></script>
+  <script src="js/intake.js?v=5"></script>
 </body>
 </html>
