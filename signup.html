@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Start your free month — HiredRep</title>
-  <meta name="description" content="Start a free month of HiredRep outbound. Card required, $0 today, then $100 a month after 30 days. Tell us your website and we will prepare a short intake.">
+  <meta name="description" content="Start a free month of HiredRep outbound. Card required, $0 today, then $100 a month after 30 days.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/styles.css?v=2">
-  <link rel="stylesheet" href="css/intake.css">
+  <link rel="stylesheet" href="css/styles.css?v=3">
+  <link rel="stylesheet" href="css/intake.css?v=2">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -36,8 +36,8 @@
     <section class="page-hero">
       <div class="wrap">
         <p class="eyebrow">Free first month</p>
-        <h1>Tell us your website. We'll prepare the rest.</h1>
-        <p class="lede">HiredRep researches, writes, sends, and books meetings onto your calendar. You take every call. After a short review of your site, you can start your free month — $0 today, then $100 a month after 30 days unless you cancel first.</p>
+        <h1>Start your HiredRep onboarding</h1>
+        <p class="lede">HiredRep researches, writes, sends, and books meetings onto your calendar. You take every call. Start your free month — $0 today, then $100 a month after 30 days unless you cancel first.</p>
       </div>
     </section>
 
@@ -45,7 +45,7 @@
       <div class="wrap">
         <div id="step-1" class="intake-step">
           <div class="notice" role="note">
-            <p>Enter your company website and email. We'll read a few public pages and come back with a short form.</p>
+            <p>Enter the information below to begin your onboarding process.</p>
           </div>
           <form id="start-form">
             <fieldset>
@@ -69,7 +69,7 @@
         <div id="step-reading" class="intake-step intake-hidden" aria-live="polite">
           <div class="intake-status">
             <p class="eyebrow">One moment</p>
-            <h2>Reading your site...</h2>
+            <h2>Setting up your onboarding...</h2>
             <p>This usually takes about 10 to 20 seconds.</p>
           </div>
         </div>
@@ -81,13 +81,96 @@
             <input type="hidden" name="fit_reasons" id="fit_reasons" value="">
             <input type="hidden" name="pages_read" id="pages_read" value="">
             <input type="hidden" name="analyze_source" id="analyze_source" value="">
+            <input type="hidden" name="status_email" id="status_email_confirm" value="">
 
             <fieldset>
-              <legend>Confirm a few details</legend>
+              <legend>Company</legend>
+              <div class="field">
+                <label for="company_name">Company name <span class="req" aria-hidden="true">*</span></label>
+                <input id="company_name" name="company_name" type="text" autocomplete="organization" required>
+              </div>
+              <div class="field">
+                <label for="website_found">Website <span class="req" aria-hidden="true">*</span></label>
+                <input id="website_found" name="website" type="text" inputmode="url" autocapitalize="off" spellcheck="false" required>
+              </div>
+              <div class="field">
+                <label for="phone">Phone (optional)</label>
+                <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel">
+              </div>
+              <div class="field">
+                <label for="postal_address">Postal mailing address <span class="req" aria-hidden="true">*</span></label>
+                <span class="help">Appears in email footers (CAN-SPAM). A PO box or PMB is fine.</span>
+                <textarea id="postal_address" name="postal_address" required placeholder="123 Main St, City, ST 00000"></textarea>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>What you sell</legend>
+              <div class="field">
+                <label for="what_you_sell">What you sell, and to whom <span class="req" aria-hidden="true">*</span></label>
+                <textarea id="what_you_sell" name="what_you_sell" required></textarea>
+              </div>
+              <div class="field">
+                <label for="problem_why_now">Problem you solve, and why buyers act now (optional)</label>
+                <textarea id="problem_why_now" name="problem_why_now"></textarea>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Ideal customers</legend>
+              <div class="field">
+                <label for="ideal_industries">Industries (optional)</label>
+                <input id="ideal_industries" name="ideal_industries" type="text">
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="ideal_titles">Titles (optional)</label>
+                  <input id="ideal_titles" name="ideal_titles" type="text">
+                </div>
+                <div class="field">
+                  <label for="ideal_size">Company size (optional)</label>
+                  <input id="ideal_size" name="ideal_size" type="text">
+                </div>
+              </div>
+              <div class="field">
+                <label for="ideal_geo">Geography (optional)</label>
+                <input id="ideal_geo" name="ideal_geo" type="text">
+              </div>
+              <div class="field">
+                <label for="best_customers">Best current customers (optional)</label>
+                <span class="help">A few names and websites. We use these to find lookalikes.</span>
+                <textarea id="best_customers" name="best_customers" placeholder="Acme Plumbing — acmeplumbing.example"></textarea>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Proof points</legend>
+              <div class="field">
+                <label for="proof_points">Proof points from your site (optional)</label>
+                <span class="help">Only claims that appear on your website. We will not invent any.</span>
+                <textarea id="proof_points" name="proof_points"></textarea>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Tone and sender</legend>
+              <div class="field">
+                <label for="tone">Tone preference (optional)</label>
+                <span class="help">For example: direct, warm, or formal. Any phrases to use or avoid?</span>
+                <textarea id="tone" name="tone" placeholder="Direct, no slang."></textarea>
+              </div>
+              <div class="field">
+                <label for="suggested_sender_name">Sender name on outbound (optional)</label>
+                <input id="suggested_sender_name" name="suggested_sender_name" type="text" placeholder="Jordan Hale" autocomplete="name">
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Meetings</legend>
               <div class="grid-2">
                 <div class="field">
                   <label for="meeting_owner_name">Who takes meetings <span class="req" aria-hidden="true">*</span></label>
-                  <input id="meeting_owner_name" name="meeting_owner_name" type="text" autocomplete="name" placeholder="Name" required>
+                  <input id="meeting_owner_name" name="meeting_owner_name" type="text" autocomplete="name" required>
                 </div>
                 <div class="field">
                   <label for="meeting_owner_email">Their email <span class="req" aria-hidden="true">*</span></label>
@@ -100,10 +183,13 @@
                 <input id="calendar_link" name="calendar_link" type="text" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="https://calendly.com/you" required>
               </div>
               <div class="field">
-                <label for="postal_address">Postal mailing address <span class="req" aria-hidden="true">*</span></label>
-                <span class="help">Appears in email footers (CAN-SPAM). A PO box or PMB is fine.</span>
-                <textarea id="postal_address" name="postal_address" required placeholder="123 Main St, City, ST 00000"></textarea>
+                <label for="qualified_meeting">What counts as a qualified meeting? <span class="req" aria-hidden="true">*</span></label>
+                <textarea id="qualified_meeting" name="qualified_meeting" required placeholder="A facilities or property lead with a live site, ready to talk this quarter."></textarea>
               </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Sending</legend>
               <div class="field">
                 <p class="label">Sending preference <span class="req" aria-hidden="true">*</span></p>
                 <div class="choices">
@@ -123,63 +209,6 @@
                 <textarea id="dnc_list" name="dnc_list" placeholder="none">none</textarea>
               </div>
             </fieldset>
-
-            <details>
-              <summary>Edit details we found</summary>
-              <div class="field">
-                <label for="company_name">Company name</label>
-                <input id="company_name" name="company_name" type="text" autocomplete="organization">
-              </div>
-              <div class="field">
-                <label for="website_found">Website</label>
-                <input id="website_found" name="website" type="text" inputmode="url" autocapitalize="off" spellcheck="false">
-              </div>
-              <div class="grid-2">
-                <div class="field">
-                  <label for="phone">Phone (optional)</label>
-                  <input id="phone" name="phone" type="tel">
-                </div>
-                <div class="field">
-                  <label for="suggested_sender_name">Sender name on outbound (optional)</label>
-                  <input id="suggested_sender_name" name="suggested_sender_name" type="text">
-                </div>
-              </div>
-              <div class="field">
-                <label for="what_you_sell">What you sell, and to whom</label>
-                <textarea id="what_you_sell" name="what_you_sell"></textarea>
-              </div>
-              <div class="field">
-                <label for="problem_why_now">Problem you solve, and why buyers act now</label>
-                <textarea id="problem_why_now" name="problem_why_now"></textarea>
-              </div>
-              <div class="field">
-                <label for="ideal_industries">Ideal customers — industries</label>
-                <input id="ideal_industries" name="ideal_industries" type="text">
-              </div>
-              <div class="grid-2">
-                <div class="field">
-                  <label for="ideal_titles">Titles</label>
-                  <input id="ideal_titles" name="ideal_titles" type="text">
-                </div>
-                <div class="field">
-                  <label for="ideal_size">Company size</label>
-                  <input id="ideal_size" name="ideal_size" type="text">
-                </div>
-              </div>
-              <div class="field">
-                <label for="ideal_geo">Geography</label>
-                <input id="ideal_geo" name="ideal_geo" type="text">
-              </div>
-              <div class="field">
-                <label for="proof_points">Proof points from your site</label>
-                <span class="help">Only claims that appear on your website. We will not invent any.</span>
-                <textarea id="proof_points" name="proof_points"></textarea>
-              </div>
-              <div class="field">
-                <label for="status_email_confirm">Email for updates</label>
-                <input id="status_email_confirm" name="status_email" type="email">
-              </div>
-            </details>
 
             <fieldset id="agree-box">
               <legend>Before you go</legend>
@@ -225,6 +254,6 @@
     </div>
   </footer>
   <script src="js/main.js?v=3"></script>
-  <script src="js/intake.js?v=3"></script>
+  <script src="js/intake.js?v=4"></script>
 </body>
 </html>

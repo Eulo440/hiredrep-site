@@ -96,31 +96,41 @@
     return (parts.length >= 2 ? parts[0] : host).replace(/[^a-z0-9]/gi, "").toLowerCase() || "yourcompany";
   }
 
+  function setVal(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.value = value == null ? "" : value;
+  }
+
   function fillDraft(website, email, payload) {
     var draft = (payload && payload.draft) || {};
     var ic = draft.ideal_customers || {};
     var host = domainFromWebsite(payload && payload.website ? payload.website : website);
-    document.getElementById("website_found").value = (payload && payload.website) || website;
-    document.getElementById("status_email_confirm").value = email;
-    document.getElementById("company_name").value = draft.company_name || "";
-    document.getElementById("phone").value = draft.phone || "";
-    document.getElementById("postal_address").value = draft.address || "";
-    document.getElementById("what_you_sell").value = draft.what_you_sell || "";
-    document.getElementById("problem_why_now").value = draft.problem_why_now || "";
-    document.getElementById("ideal_industries").value = ic.industries || "";
-    document.getElementById("ideal_titles").value = ic.titles || "";
-    document.getElementById("ideal_size").value = ic.size || "";
-    document.getElementById("ideal_geo").value = ic.geo || "";
-    document.getElementById("proof_points").value = (draft.proof_points || []).join("\n");
-    document.getElementById("suggested_sender_name").value = draft.suggested_sender_name || "";
-    document.getElementById("meeting_owner_email").value = email;
-    if (draft.suggested_sender_name) document.getElementById("meeting_owner_name").value = draft.suggested_sender_name;
-    document.getElementById("send-label-a").textContent = "hiredrep@" + host + " — a mailbox on your own domain (recommended)";
-    document.getElementById("send-label-b").textContent = slugFromHost(host) + "@gethiredrep.com — we set it up for you, same day";
-    document.getElementById("fit_decision").value = (draft.fit && draft.fit.decision) || "review";
-    document.getElementById("fit_reasons").value = ((draft.fit && draft.fit.reasons) || []).join(" | ");
-    document.getElementById("pages_read").value = ((payload && payload.pages_read) || []).join("\n");
-    document.getElementById("analyze_source").value = (payload && payload.source) || "";
+    setVal("website_found", (payload && payload.website) || website);
+    setVal("status_email_confirm", email);
+    setVal("company_name", draft.company_name || "");
+    setVal("phone", draft.phone || "");
+    setVal("postal_address", draft.address || "");
+    setVal("what_you_sell", draft.what_you_sell || "");
+    setVal("problem_why_now", draft.problem_why_now || "");
+    setVal("ideal_industries", ic.industries || "");
+    setVal("ideal_titles", ic.titles || "");
+    setVal("ideal_size", ic.size || "");
+    setVal("ideal_geo", ic.geo || "");
+    setVal("best_customers", draft.best_customers || "");
+    setVal("proof_points", (draft.proof_points || []).join("\n"));
+    setVal("tone", draft.tone || "");
+    setVal("suggested_sender_name", draft.suggested_sender_name || "");
+    setVal("qualified_meeting", draft.qualified_meeting || "");
+    setVal("meeting_owner_email", email);
+    if (draft.suggested_sender_name) setVal("meeting_owner_name", draft.suggested_sender_name);
+    var sendA = document.getElementById("send-label-a");
+    var sendB = document.getElementById("send-label-b");
+    if (sendA) sendA.textContent = "hiredrep@" + host + " — a mailbox on your own domain (recommended)";
+    if (sendB) sendB.textContent = slugFromHost(host) + "@gethiredrep.com — we set it up for you, same day";
+    setVal("fit_decision", (draft.fit && draft.fit.decision) || "review");
+    setVal("fit_reasons", ((draft.fit && draft.fit.reasons) || []).join(" | "));
+    setVal("pages_read", ((payload && payload.pages_read) || []).join("\n"));
+    setVal("analyze_source", (payload && payload.source) || "");
   }
 
   function applyDecision(decision, reasons) {
@@ -153,7 +163,7 @@
     fillDraft(website, email, { website: website, draft: { fit: { decision: "review", reasons: ["Site reading failed; short form used."] } }, source: "fallback" });
     applyDecision("accept", []);
     document.getElementById("fit-banner").innerHTML =
-      "<p>" + (message || "We could not finish reading the site.") + " Fill in this short form to continue.</p>";
+      "<p>" + (message || "We could not finish setup.") + " Fill in this form to continue.</p>";
     document.getElementById("fit_decision").value = "accept";
     document.getElementById("submit-btn").textContent = "Submit and start your free month";
     document.getElementById("pay-note").hidden = false;
@@ -203,7 +213,7 @@
       .then(function (out) {
         clearTimeout(timer);
         if (!out.data || !out.data.ok) {
-          showFallback(website, email, (out.data && out.data.error) || "We could not finish reading the site.");
+          showFallback(website, email, (out.data && out.data.error) || "We could not finish setup.");
           return;
         }
         fillDraft(website, email, out.data);
@@ -214,7 +224,7 @@
       })
       .catch(function () {
         clearTimeout(timer);
-        showFallback(website, email, "We could not finish reading the site.");
+        showFallback(website, email, "We could not finish setup.");
       });
   });
 

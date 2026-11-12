@@ -14,3 +14,23 @@
   margin: 0 0 1.25rem;
 }
 .choice small { margin-top: 0.15rem; }
+
+.intake input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="file"]),
+.intake textarea,
+.intake select {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 0.65rem;
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--ink);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.intake textarea { min-height: 5.5rem; resize: vertical; }
