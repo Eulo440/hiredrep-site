@@ -39,6 +39,49 @@
     node.textContent = message;
   }
 
+  function normalizeUrl(value) {
+    var raw = String(value || "").trim();
+    if (!raw) {
+      return { ok: false, url: "", error: "Enter a web address like amazon.com or https://amazon.com." };
+    }
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(raw)) raw = "https://" + raw;
+    var parsed;
+    try {
+      parsed = new URL(raw);
+    } catch (err) {
+      return { ok: false, url: "", error: "Enter a web address like amazon.com or https://amazon.com." };
+    }
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return { ok: false, url: "", error: "Enter a web address like amazon.com or https://amazon.com." };
+    }
+    var host = (parsed.hostname || "").toLowerCase();
+    if (!host || host.indexOf(".") === -1) {
+      return { ok: false, url: "", error: "Enter a web address like amazon.com or https://amazon.com." };
+    }
+    return { ok: true, url: parsed.toString(), error: "" };
+  }
+
+  function applyNormalizedUrl(input, options) {
+    options = options || {};
+    var raw = (input.value || "").trim();
+    if (!raw) {
+      input.setCustomValidity(options.required ? "Enter a web address like amazon.com or https://amazon.com." : "");
+      if (options.errorNode && options.required) setError(options.errorNode, "Enter a web address like amazon.com or https://amazon.com.");
+      else if (options.errorNode) setError(options.errorNode, "");
+      return "";
+    }
+    var out = normalizeUrl(raw);
+    if (out.ok) {
+      input.value = out.url;
+      input.setCustomValidity("");
+      if (options.errorNode) setError(options.errorNode, "");
+      return out.url;
+    }
+    input.setCustomValidity(out.error);
+    if (options.errorNode) setError(options.errorNode, out.error);
+    return "";
+  }
+
   function domainFromWebsite(website) {
     try {
       var host = new URL(website).hostname.replace(/^www\./, "");
@@ -118,12 +161,32 @@
     show(step2);
   }
 
+  ["website", "website_found", "calendar_link"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("blur", function () {
+      var required = el.hasAttribute("required");
+      var errorNode = id === "website" ? startError : document.getElementById("submit-error");
+      if (!(el.value || "").trim()) {
+        el.setCustomValidity(required ? "Enter a web address like amazon.com or https://amazon.com." : "");
+        if (id === "website") setError(startError, "");
+        return;
+      }
+      applyNormalizedUrl(el, { required: required, errorNode: errorNode });
+    });
+  });
+
   startForm.addEventListener("submit", function (event) {
     event.preventDefault();
     setError(startError, "");
-    var website = document.getElementById("website").value.trim();
-    var email = document.getElementById("status_email").value.trim();
-    if (!website || !email) {
+    var websiteInput = document.getElementById("website");
+    var email = (document.getElementById("status_email").value || "").trim();
+    var website = applyNormalizedUrl(websiteInput, { required: true, errorNode: startError });
+    if (!website) {
+      if (websiteInput.reportValidity) websiteInput.reportValidity();
+      return;
+    }
+    if (!email) {
       setError(startError, "Enter your website and email.");
       return;
     }
@@ -178,6 +241,16 @@
     event.preventDefault();
     var err = document.getElementById("submit-error");
     setError(err, "");
+    var calendarInput = document.getElementById("calendar_link");
+    var foundInput = document.getElementById("website_found");
+    if (!applyNormalizedUrl(calendarInput, { required: true, errorNode: err })) {
+      if (calendarInput.reportValidity) calendarInput.reportValidity();
+      return;
+    }
+    if ((foundInput.value || "").trim() && !applyNormalizedUrl(foundInput, { required: false, errorNode: err })) {
+      if (foundInput.reportValidity) foundInput.reportValidity();
+      return;
+    }
     if (!intakeForm.reportValidity()) return;
     var decision = document.getElementById("fit_decision").value || "review";
     var data = collectPayload();
