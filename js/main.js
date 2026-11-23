@@ -64,11 +64,6 @@
       notice.innerHTML = "<p><strong>Your free month has started.</strong> Submit this intake so we can begin. If you already sent it, you do not need to send it again — John will email you from <a href=\"mailto:john@hiredrep.ai\">john@hiredrep.ai</a>.</p>";
     }
 
-    var next = form.querySelector("input[name='_next']");
-    if (next) next.value = "https://hiredrep.ai/thanks.html?paid=1";
-    var subject = form.querySelector("input[name='_subject']");
-    if (subject) subject.value = "New HiredRep sign-up (paid)";
-
     function ensureHidden(name, value) {
       var existing = form.querySelector("input[name='" + name + "']");
       if (!existing) {
@@ -87,54 +82,4 @@
       fine.innerHTML = 'Questions? <a href="mailto:john@hiredrep.ai">john@hiredrep.ai</a>';
     }
   }
-})();
-
-/* Signed-in header: swap "Sign in" for Dashboard + Sign out on every page */
-(function () {
-  var signedIn = false;
-  try { signedIn = localStorage.getItem("hiredrepDemo") === "1"; } catch (err) {}
-  if (!signedIn) return;
-
-  var path = location.pathname || "";
-  if (/(?:^|\/)login\.html$/i.test(path)) {
-    location.replace("dashboard.html");
-    return;
-  }
-
-  var nav = document.getElementById("site-nav");
-  if (!nav) return;
-
-  function isLoginHref(href) {
-    return href && /(?:^|\/)login\.html(?:[?#]|$)/i.test(href);
-  }
-
-  function addSignOutAfter(el) {
-    if (nav.querySelector(".js-sign-out, #sign-out")) return;
-    var out = document.createElement("a");
-    out.href = "login.html";
-    out.className = "js-sign-out";
-    out.textContent = "Sign out";
-    out.addEventListener("click", function (e) {
-      e.preventDefault();
-      try { localStorage.removeItem("hiredrepDemo"); } catch (err) {}
-      location.href = "index.html";
-    });
-    el.parentNode.insertBefore(out, el.nextSibling);
-  }
-
-  var loginLinks = Array.prototype.filter.call(nav.querySelectorAll("a"), function (a) {
-    return isLoginHref(a.getAttribute("href"));
-  });
-
-  if (loginLinks.length) {
-    loginLinks.forEach(function (a) {
-      a.textContent = "Dashboard";
-      a.setAttribute("href", "dashboard.html");
-      addSignOutAfter(a);
-    });
-    return;
-  }
-
-  var dash = nav.querySelector('a[href="dashboard.html"], a[href$="/dashboard.html"]');
-  if (dash) addSignOutAfter(dash);
 })();

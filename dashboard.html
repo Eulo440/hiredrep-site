@@ -3,23 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Summit Ridge Plumbing dashboard — HiredRep</title>
-  <meta name="description" content="Sample HiredRep client dashboard.">
+  <title>Sample activity report — HiredRep</title>
+  <meta name="description" content="Sample HiredRep client activity report.">
+  <meta name="robots" content="noindex">
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="css/styles.css">
-  <script>
-    (function () {
-      try {
-        if (localStorage.getItem("hiredrepDemo") !== "1") {
-          location.replace("login.html");
-        }
-      } catch (err) {
-        location.replace("login.html");
-      }
-    })();
-  </script>
 </head>
 <body class="dashboard-page">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -37,8 +27,8 @@
         <a href="index.html#how">How it works</a>
         <a href="index.html#pricing">Pricing</a>
         <a href="index.html#faq">FAQ</a>
-        <a href="dashboard.html" aria-current="page">Dashboard</a>
-        <button class="btn btn-sm btn-secondary" type="button" id="sign-out">Sign out</button>
+        <a href="dashboard.html" aria-current="page">Sample report</a>
+        <a class="btn btn-sm" href="signup.html">Start your free month</a>
       </nav>
     </div>
   </header>
@@ -46,10 +36,10 @@
   <main id="main">
     <section class="page-hero">
       <div class="wrap">
-        <p class="demo-banner">Demo account – sample data</p>
-        <p class="eyebrow">Dashboard</p>
+        <p class="demo-banner">Sample data – a made-up client</p>
+        <p class="eyebrow">Sample activity report</p>
         <h1>Summit Ridge Plumbing</h1>
-        <p class="lede">Free month: 18 days left. Sample activity so you can see what a live dashboard looks like.</p>
+        <p class="lede">Free month: 18 days left. This is what the private activity report we email you looks like.</p>
       </div>
     </section>
 
@@ -86,14 +76,9 @@
               <div class="mono">hiredrep@summitridgeplumbing.com</div>
               <span class="help" style="display:block;margin-top:0.25rem;color:var(--muted);font-size:0.9rem">Dedicated client mailbox</span>
             </div>
-            <span class="pill pill-connected"><span class="pill-dot" aria-hidden="true"></span>Connected</span>
+            <span class="pill pill-connected"><span class="pill-dot" aria-hidden="true"></span>Sending</span>
           </div>
-          <p style="margin-bottom:0.7rem">Connect your mailbox</p>
-          <div class="hero-actions" style="margin-bottom:0.85rem">
-            <button class="btn btn-secondary btn-sm js-connect" type="button" data-provider="Google">Connect with Google</button>
-            <button class="btn btn-secondary btn-sm js-connect" type="button" data-provider="Microsoft">Connect with Microsoft</button>
-          </div>
-          <p class="fine-print">or send from <span class="mono">summitridge@gethiredrep.com</span></p>
+          <p class="fine-print">Fallback if you’d rather not add a mailbox: <span class="mono">summitridge@gethiredrep.com</span></p>
         </article>
 
         <article class="dash-card">
@@ -275,7 +260,7 @@
                 <dd>One-off residential homeowners</dd>
               </div>
             </dl>
-            <p style="margin-top:1rem"><a href="signup.html">Edit answers</a></p>
+            <p style="margin-top:1rem">To change these, reply to John at <a href="mailto:john@hiredrep.ai">john@hiredrep.ai</a>.</p>
           </article>
           <article class="dash-card">
             <h3>Billing</h3>
@@ -310,13 +295,6 @@
   <script src="js/main.js?v=3"></script>
   <script>
     (function () {
-      var signOut = document.getElementById("sign-out");
-      if (signOut) {
-        signOut.addEventListener("click", function () {
-          try { localStorage.removeItem("hiredrepDemo"); } catch (err) {}
-          location.replace("login.html");
-        });
-      }
 
       var toast = document.getElementById("toast");
       var timer = null;
@@ -329,12 +307,6 @@
           toast.classList.remove("is-on");
         }, 3200);
       }
-
-      document.querySelectorAll(".js-connect").forEach(function (button) {
-        button.addEventListener("click", function () {
-          showToast("Demo: in a live account this opens Google/Microsoft sign-in");
-        });
-      });
     })();
   </script>
 </body>
