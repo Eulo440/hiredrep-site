@@ -40,6 +40,7 @@
   var intakeForm = document.getElementById("intake-form");
   var resumeToken = "";
   var autosaveTimer = null;
+  var submittedOk = false;
   var lastAutosaveAt = 0;
 
   function show(el) {
@@ -360,6 +361,8 @@
     var website = extra.website || currentWebsite();
     var email = extra.email || currentEmail();
     if (!website || !email) return Promise.resolve(null);
+    // Never autosave while the final submit is in flight or after it succeeded.
+    if (submitting || submittedOk) return Promise.resolve(null);
     var body = {
       token: resumeToken || extra.token || "",
       website: website,
@@ -609,6 +612,8 @@
         submitBtn.disabled = false;
         return;
       }
+      submittedOk = true;
+      if (autosaveTimer) clearTimeout(autosaveTimer);
       if (decision === "accept" || decision === "returning") {
         var already = saved.already;
         var link = decision === "returning" || already ? STRIPE_NO_TRIAL_LINK : STRIPE_LINK;
@@ -626,6 +631,8 @@
       if (!event.target || !event.target.name) return;
       if (step2.classList.contains("intake-hidden")) return;
       if (autosaveTimer) clearTimeout(autosaveTimer);
+      // Focus moving to the submit button: the submit itself saves everything.
+      if (event.relatedTarget && event.relatedTarget.id === "submit-btn") return;
       savePartial({ source: "blur" });
     }, true);
     intakeForm.addEventListener("input", scheduleAutosave);
