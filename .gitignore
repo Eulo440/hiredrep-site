@@ -1,2 +1,5 @@
 # Client dashboards must never be committed to this public repository.
 d/
+
+# Local marker file, not for the public repo.
+.hiredrep-site-revision
